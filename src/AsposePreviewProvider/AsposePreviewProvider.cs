@@ -13,6 +13,7 @@ using AsposeWords = Aspose.Words;
 using Aspose.Words.Drawing;
 using SenseNet.ContentRepository;
 using SenseNet.Diagnostics;
+using SenseNet.Preview.Aspose.PreviewImageGenerators;
 using SNCR = SenseNet.ContentRepository;
 using STORAGE = SenseNet.ContentRepository.Storage;
 
@@ -28,6 +29,7 @@ namespace SenseNet.Preview.Aspose
         // ===================================================================================================== Properties
 
         protected static bool LicenseChecked { get; set; }
+        public bool SkipLicenseCheck { get; set; }
 
         // ===================================================================================================== Overrides
 
@@ -397,34 +399,36 @@ namespace SenseNet.Preview.Aspose
 
         internal static void CheckLicense(LicenseProvider provider)
         {
+            if (!(Current is AsposePreviewProvider ap) || ap.SkipLicenseCheck)
+                return;
+
             try
             {
-                var licensePath = Common.LICENSEPATH;
                 switch (provider)
                 {
                     case LicenseProvider.Cells:
-                        new AsposeCells.License().SetLicense(licensePath);
+                        new AsposeCells.License().SetLicense(Constants.LicensePath);
                         break;
                     case LicenseProvider.Diagram:
-                        new AsposeDiagram.License().SetLicense(licensePath);
+                        new AsposeDiagram.License().SetLicense(Constants.LicensePath);
                         break;
                     case LicenseProvider.Pdf:
-                        new AsposePdf.License().SetLicense(licensePath);
+                        new AsposePdf.License().SetLicense(Constants.LicensePath);
                         break;
                     case LicenseProvider.Slides:
-                        new AsposeSlides.License().SetLicense(licensePath);
+                        new AsposeSlides.License().SetLicense(Constants.LicensePath);
                         break;
                     case LicenseProvider.Words:
-                        new AsposeWords.License().SetLicense(licensePath);
+                        new AsposeWords.License().SetLicense(Constants.LicensePath);
                         break;
                     case LicenseProvider.Tasks:
-                        new AsposeTasks.License().SetLicense(licensePath);
+                        new AsposeTasks.License().SetLicense(Constants.LicensePath);
                         break;
                     case LicenseProvider.Imaging:
-                        new AsposeImaging.License().SetLicense(licensePath);
+                        new AsposeImaging.License().SetLicense(Constants.LicensePath);
                         break;
                     case LicenseProvider.Email:
-                        new AsposeEmail.License().SetLicense(licensePath);
+                        new AsposeEmail.License().SetLicense(Constants.LicensePath);
                         break;
                 }
             }
@@ -436,7 +440,7 @@ namespace SenseNet.Preview.Aspose
 
         protected static void WriteLicenseException(Exception ex)
         {
-            var lex = new Exception("There was an error using Apose License (" + Common.LICENSEPATH + ")", ex);
+            var lex = new Exception("There was an error using Aspose License (" + Constants.LicensePath + ")", ex);
             SnLog.WriteException(lex);
         }
 

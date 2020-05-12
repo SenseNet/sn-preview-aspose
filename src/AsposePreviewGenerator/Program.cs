@@ -11,6 +11,7 @@ using System.Threading.Tasks;
 using IdentityModel.Client;
 using SenseNet.Client;
 using SenseNet.Diagnostics;
+using SenseNet.Preview.Aspose.PreviewImageGenerators;
 using AsposeTools = SenseNet.Preview.Aspose.PreviewImageGenerators.Tools;
 using SenseNet.TaskManagement.Core;
 using SenseNet.Tools;
@@ -619,32 +620,32 @@ namespace SenseNet.Preview.Aspose.AsposePreviewGenerator
         private static void CheckLicense(string fileName)
         {
             var extension = fileName.Substring(fileName.LastIndexOf('.')).ToLower();
-            var licensePath = Common.LICENSEPATH;
+
             try
             {
                 if (Common.WORD_EXTENSIONS.Contains(extension))
-                    new AsposeWords.License().SetLicense(licensePath);
+                    new AsposeWords.License().SetLicense(Constants.LicensePath);
                 else if (Common.IMAGE_EXTENSIONS.Contains(extension) || Common.TIFF_EXTENSIONS.Contains(extension))
-                    new AsposeImaging.License().SetLicense(licensePath);
+                    new AsposeImaging.License().SetLicense(Constants.LicensePath);
                 else if (Common.DIAGRAM_EXTENSIONS.Contains(extension))
-                    new AsposeDiagram.License().SetLicense(licensePath);
+                    new AsposeDiagram.License().SetLicense(Constants.LicensePath);
                 else if (Common.WORKBOOK_EXTENSIONS.Contains(extension))
-                    new AsposeCells.License().SetLicense(licensePath);
+                    new AsposeCells.License().SetLicense(Constants.LicensePath);
                 else if (Common.PDF_EXTENSIONS.Contains(extension))
-                    new AsposePdf.License().SetLicense(licensePath);
+                    new AsposePdf.License().SetLicense(Constants.LicensePath);
                 else if (Common.PRESENTATION_EXTENSIONS.Contains(extension) || Common.PRESENTATIONEX_EXTENSIONS.Contains(extension))
-                    new AsposeSlides.License().SetLicense(licensePath);
+                    new AsposeSlides.License().SetLicense(Constants.LicensePath);
                 else if (Common.EMAIL_EXTENSIONS.Contains(extension))
                 {
                     // we use Aspose.Word for generating preview images from msg files
-                    new AsposeEmail.License().SetLicense(licensePath);
-                    new AsposeWords.License().SetLicense(licensePath);
+                    new AsposeEmail.License().SetLicense(Constants.LicensePath);
+                    new AsposeWords.License().SetLicense(Constants.LicensePath);
                 }
                 else if (Common.PROJECT_EXTENSIONS.Contains(extension))
                 {
                     // we use Aspose.Pdf for generating preview images from mpp files
-                    new AsposeTasks.License().SetLicense(licensePath);
-                    new AsposePdf.License().SetLicense(licensePath);
+                    new AsposeTasks.License().SetLicense(Constants.LicensePath);
+                    new AsposePdf.License().SetLicense(Constants.LicensePath);
                 }
             }
             catch (Exception ex)
