@@ -348,3 +348,12 @@ MigrationBackup/
 
 # Ionide (cross platform F# VS Code tools) working folder
 .ionide/
+
+# sensenet
+/src/nuget/content/Admin/tools/install-preview-aspose.zip
+/src/nuget/content/TaskManagement/TaskExecutors/AsposePreviewGenerator
+/src/AsposePreviewProvider/Aspose.Total.lic
+/src/AsposePreviewGenerator/Aspose.Total.lic
+/tools/scripts/*.nupkg
+/tools/scripts/*.zip
+/src/AsposePreviewProvider.Install/install-preview-aspose.zip
