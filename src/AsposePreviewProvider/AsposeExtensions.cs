@@ -1,7 +1,10 @@
 ﻿using System;
+using SenseNet.Preview;
+using SenseNet.Preview.Aspose;
 using SenseNet.Tools;
 
-namespace SenseNet.Preview.Aspose
+// ReSharper disable once CheckNamespace
+namespace SenseNet.Extensions.DependencyInjection
 {
     public class AsposeOptions
     {
