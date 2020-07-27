@@ -6,7 +6,7 @@
     <RootNamespace>SenseNet.Preview.Aspose.Install</RootNamespace>
     <TargetFramework>netstandard2.0</TargetFramework>
     <GeneratePackageOnBuild>true</GeneratePackageOnBuild>
-    <Version>7.3.0.1</Version>
+    <Version>7.3.1</Version>
     <Company>Sense/Net Inc.</Company>
     <Copyright>Copyright © Sense/Net Inc.</Copyright>
     <PackageLicenseUrl>https://github.com/SenseNet/sn-preview/blob/master/LICENSE</PackageLicenseUrl>
