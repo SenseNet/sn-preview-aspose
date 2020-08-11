@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Diagnostics;
+using SenseNet.Diagnostics;
 using SenseNet.TaskManagement.Core;
 
 namespace SenseNet.Preview.Aspose.AsposePreviewGenerator
@@ -10,7 +11,9 @@ namespace SenseNet.Preview.Aspose.AsposePreviewGenerator
 
         internal static void WriteInfo(int contentId, int page, string message)
         {
-            Trace.WriteLine(string.Format("{0} {1} Content id: {2}, page number: {3}", LOG_PREFIX, message, contentId, page));
+            var msg = $"{LOG_PREFIX} {message} Content id: {contentId}, page number: {page}";
+            Trace.WriteLine(msg);
+            SnTrace.TaskManagement.Write(msg);
         }
 
         internal static void WriteWarning(int contentId, int page, string message)
