@@ -8,9 +8,11 @@ using System.Drawing;
 using System.Net.Http;
 using System.Threading;
 using System.Threading.Tasks;
-using IdentityModel.Client;
+using Microsoft.Extensions.DependencyInjection;
 using SenseNet.Client;
+using SenseNet.Client.Authentication;
 using SenseNet.Diagnostics;
+using SenseNet.Extensions.DependencyInjection;
 using SenseNet.Preview.Aspose.PreviewImageGenerators;
 using AsposeTools = SenseNet.Preview.Aspose.PreviewImageGenerators.Tools;
 using SenseNet.TaskManagement.Core;
@@ -37,6 +39,8 @@ namespace SenseNet.Preview.Aspose.AsposePreviewGenerator
         public static string SiteUrl { get; set; }
         public static string Username { get; set; }
         public static string Password { get; set; }
+
+        private static ServiceProvider ServiceProvider { get; set; }
 
         // shortcut
         public static Configuration Config => Configuration.Instance;
@@ -77,8 +81,15 @@ namespace SenseNet.Preview.Aspose.AsposePreviewGenerator
 
         private static async Task<bool> InitializeAsync()
         {
+            ServiceProvider = new ServiceCollection()
+                .AddLogging()
+                .AddSenseNetClientTokenStore()
+                .BuildServiceProvider();
+
             SnTrace.EnableAll();
             Configuration.Initialize();
+
+            SnTrace.SnTracers.Add(new SnFileSystemTracer());
 
             ServicePointManager.DefaultConnectionLimit = 10;
 
@@ -86,19 +97,24 @@ namespace SenseNet.Preview.Aspose.AsposePreviewGenerator
             ClientContext.Current.AddServer(new ServerContext
             {
                 Url = SiteUrl,
-                Username = Username,
-                Password = Password,
-
                 IsTrusted = Config.Environment.IsDevelopment
             });
-
+            
             try
             {
-                var token = await GetAccessTokenAsync();
+                var tokenStore = ServiceProvider.GetRequiredService<TokenStore>();
+                var secret = string.IsNullOrEmpty(Password) ? "secret" : Password;
+                var token = await tokenStore.GetTokenAsync(ClientContext.Current.Server, secret);
+
                 ClientContext.Current.Server.Authentication.AccessToken = token;
 
                 if (string.IsNullOrEmpty(token))
+                {
                     SnTrace.System.Write("Access token is empty, fallback to user name and password.");
+
+                    ClientContext.Current.Server.Username = Username;
+                    ClientContext.Current.Server.Password = Password;
+                }
             }
             catch (Exception ex)
             {
@@ -517,67 +533,6 @@ namespace SenseNet.Preview.Aspose.AsposePreviewGenerator
                     // failed, but give them a new chance
                     return false;
                 });
-        }
-        
-        private static async Task<string> GetAccessTokenAsync()
-        {
-            // get the configured authority from the sensenet service
-            dynamic authInfo;
-            try
-            {
-                authInfo = await RESTCaller.GetResponseJsonAsync(new ODataRequest
-                {
-                    Path = "/Root",
-                    ActionName = "GetClientRequestParameters",
-                    Parameters = { { "clientType", "client" } }
-                }).ConfigureAwait(false);
-            }
-            catch
-            {
-                // Could not retrieve authentication info. This is OK in case of
-                // an old content repository.
-                SnTrace.System.Write($"Authority information could not be retrieved from the service: {SiteUrl}");
-                return string.Empty;
-            }
-
-            string authority = authInfo.authority;
-
-            SnTrace.System.Write($"Authority {authority} got from the service {authority}");
-
-            // discover endpoints from metadata
-            var client = new HttpClient();
-            var disco = await client.GetDiscoveryDocumentAsync(authority);
-            if (disco.IsError)
-            {
-                var message = $"Authority {authority} responded with an error: {disco.Error}, " +
-                               "discovery document could not be retrieved.";
-
-                throw new InvalidOperationException(message, disco.Exception);
-            }
-
-            SnTrace.System.Write("Discovery document received successfully.");
-
-            // request token
-            var tokenResponse = await client.RequestClientCredentialsTokenAsync(new ClientCredentialsTokenRequest
-            {
-                Address = disco.TokenEndpoint,
-
-                ClientId = authInfo.client_id,
-                ClientSecret = Config.Authentication.ClientSecret,
-                Scope = "sensenet"
-            }).ConfigureAwait(false);
-
-            if (tokenResponse.IsError)
-            {
-                var message = $"Authority {authority} responded with an error: {tokenResponse.Error}, " +
-                              "access token could not be retrieved.";
-
-                throw new InvalidOperationException(message, tokenResponse.Exception);
-            }
-
-            SnTrace.System.Write("Client credentials access token received successfully.");
-
-            return tokenResponse.AccessToken;
         }
         
         private static bool ParseParameters(string[] args)
