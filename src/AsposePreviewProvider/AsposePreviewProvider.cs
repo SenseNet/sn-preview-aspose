@@ -11,9 +11,13 @@ using AsposeEmail = Aspose.Email;
 using AsposeTasks = Aspose.Tasks;
 using AsposeWords = Aspose.Words;
 using Aspose.Words.Drawing;
+using Microsoft.Extensions.Options;
+using SenseNet.BackgroundOperations;
 using SenseNet.ContentRepository;
 using SenseNet.Diagnostics;
+using SenseNet.Extensions.DependencyInjection;
 using SenseNet.Preview.Aspose.PreviewImageGenerators;
+using SenseNet.TaskManagement.Core;
 using SNCR = SenseNet.ContentRepository;
 using STORAGE = SenseNet.ContentRepository.Storage;
 
@@ -30,6 +34,16 @@ namespace SenseNet.Preview.Aspose
 
         protected static bool LicenseChecked { get; set; }
         public bool SkipLicenseCheck { get; set; }
+
+        protected AsposePreviewProvider(
+            IOptions<AsposeOptions> asposeOptions,
+            IOptions<TaskManagementOptions> taskManagementOptions,
+            ITaskManager taskManager)
+            : base(taskManagementOptions, taskManager)
+        {
+            if (asposeOptions.Value != null)
+                SkipLicenseCheck = asposeOptions.Value.SkipLicenseCheck;
+        }
 
         // ===================================================================================================== Overrides
 
