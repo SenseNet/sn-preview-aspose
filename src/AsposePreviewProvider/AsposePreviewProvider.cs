@@ -35,7 +35,7 @@ namespace SenseNet.Preview.Aspose
         protected static bool LicenseChecked { get; set; }
         public bool SkipLicenseCheck { get; set; }
 
-        protected AsposePreviewProvider(
+        public AsposePreviewProvider(
             IOptions<AsposeOptions> asposeOptions,
             IOptions<TaskManagementOptions> taskManagementOptions,
             ITaskManager taskManager)
