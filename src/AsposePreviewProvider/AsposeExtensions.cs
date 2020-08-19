@@ -25,14 +25,15 @@ namespace SenseNet.Extensions.DependencyInjection
         /// <summary>
         /// Adds the Aspose document provider to the service collection.
         /// </summary>
-        public static IServiceCollection AddAsposeDocumentPreviewProvider(this IServiceCollection services, IConfiguration configuration = null)
+        public static IServiceCollection AddAsposeDocumentPreviewProvider(this IServiceCollection services, 
+            Action<AsposeOptions> configureAspose = null)
         {
-            if (configuration != null)
-                services.Configure<AsposeOptions>(configuration.GetSection("sensenet:AsposePreviewProvider"));
+            services.Configure<AsposeOptions>(options =>
+            {
+                configureAspose?.Invoke(options);
+            });
 
-            //UNDONE: do not call AddSingleton directly. Call the AddSenseNetDocumentPreviewProvider method
-            // when it is available. Currently it is in the Services.Core project which is not referenced here.
-            return services.AddSingleton<IPreviewProvider, AsposePreviewProvider>();
+            return services.AddSenseNetDocumentPreviewProvider<AsposePreviewProvider>();
         }
     }
 }
