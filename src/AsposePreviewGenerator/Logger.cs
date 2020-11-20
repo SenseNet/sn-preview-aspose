@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Diagnostics;
+using SenseNet.Client;
 using SenseNet.Diagnostics;
 using SenseNet.TaskManagement.Core;
 
@@ -26,14 +27,13 @@ namespace SenseNet.Preview.Aspose.AsposePreviewGenerator
 
         internal static void WriteError(int contentId, int page = 0, string message = null, Exception ex = null, int startIndex = 0, string version = "")
         {
-            Trace.WriteLine(string.Format("{0} ERROR {1} Content id: {2}, version: {3}, page number: {4}, start index: {5}, Exception: {6}",
-                LOG_PREFIX,
-                message == null ? "Error during preview generation." : message.Replace(Environment.NewLine, " * "), 
-                contentId, 
-                version,
-                page, 
-                startIndex,
-                ex == null ? string.Empty : ex.ToString().Replace(Environment.NewLine, " * ")));
+            var msg = message == null
+                ? "Error during preview generation."
+                : message.Replace(Environment.NewLine, " * ");
+
+            Trace.WriteLine($"{LOG_PREFIX} ERROR {msg} Content id: {contentId}, " +
+                            $"version: {version}, page number: {page}, start index: {startIndex}, " +
+                            $"Exception: {FormatException(ex).Replace(Environment.NewLine, " * ")}");
 
             if (ex != null)
                 Console.WriteLine("ERROR:" + SnTaskError.Create(ex, new
@@ -42,8 +42,21 @@ namespace SenseNet.Preview.Aspose.AsposePreviewGenerator
                     Page = page, 
                     StartIndex = startIndex, 
                     Version = version,
-                    Message = message
+                    Message = msg
                 }));
+        }
+
+        private static string FormatException(Exception ex)
+        {
+            return ex switch
+            {
+                null => string.Empty,
+                ClientException cex => $"{cex.Message} StatusCode: {cex.StatusCode} " +
+                                       $"ErrorData: {cex.ErrorData?.Message} # " +
+                                       $"{cex.ErrorData?.ErrorCode} # " +
+                                       $"{cex.ErrorData?.ExceptionType} {cex.ErrorData?.InnerError}",
+                _ => ex.ToString(),
+            };
         }
     }
 }
