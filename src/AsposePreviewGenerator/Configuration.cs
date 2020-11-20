@@ -17,10 +17,6 @@ namespace SenseNet.Preview.Aspose.AsposePreviewGenerator
         public int PreviewResolution { get; set; } = 300;
         public bool CheckLicense { get; set; } = true;
     }
-    public class AuthenticationConfig
-    {
-        public string ClientSecret { get; set; } = "secret";
-    }
 
     public class EnvironmentConfig
     {
@@ -31,26 +27,20 @@ namespace SenseNet.Preview.Aspose.AsposePreviewGenerator
 
     public class Configuration
     {
-        public AuthenticationConfig Authentication { get; } = new AuthenticationConfig();
         public UploadConfig Upload { get; } = new UploadConfig();
         public ImageGenerationConfig ImageGeneration { get; } = new ImageGenerationConfig();
         public EnvironmentConfig Environment { get; } = new EnvironmentConfig();
         
         internal static Configuration Instance { get; private set; }
 
-        public static void Initialize()
+        public static void Initialize(IConfiguration configurationSource)
         {
             var configuration = new Configuration();
 
             try
             {
-                var configurationSource = new ConfigurationBuilder()
-                        .AddJsonFile("appsettings.json", optional: true, reloadOnChange: true)
-                        .AddEnvironmentVariables()
-                        .Build();
+                configurationSource.GetSection("sensenet:AsposePreviewGenerator").Bind(configuration);
 
-                configurationSource.Bind(configuration);
-                
                 var environmentName = configurationSource.GetValue("NETCORE_ENVIRONMENT", "Production");
 
                 configuration.Environment.IsDevelopment = string.Equals(environmentName, "Development",

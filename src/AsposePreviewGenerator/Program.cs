@@ -8,6 +8,7 @@ using System.Drawing;
 using System.Net.Http;
 using System.Threading;
 using System.Threading.Tasks;
+using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using SenseNet.Client;
 using SenseNet.Client.Authentication;
@@ -81,13 +82,18 @@ namespace SenseNet.Preview.Aspose.AsposePreviewGenerator
 
         private static async Task<bool> InitializeAsync()
         {
+            var configuration = new ConfigurationBuilder()
+                .AddJsonFile("appsettings.json", optional: true, reloadOnChange: true)
+                .AddEnvironmentVariables()
+                .Build();
+
             ServiceProvider = new ServiceCollection()
                 .AddLogging()
                 .AddSenseNetClientTokenStore()
                 .BuildServiceProvider();
 
             SnTrace.EnableAll();
-            Configuration.Initialize();
+            Configuration.Initialize(configuration);
 
             SnTrace.SnTracers.Add(new SnFileSystemTracer());
 
