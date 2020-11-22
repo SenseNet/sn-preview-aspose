@@ -10,6 +10,7 @@ using System.Threading;
 using System.Threading.Tasks;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.Logging;
 using SenseNet.Client;
 using SenseNet.Client.Authentication;
 using SenseNet.Diagnostics;
@@ -88,7 +89,7 @@ namespace SenseNet.Preview.Aspose.AsposePreviewGenerator
                 .Build();
 
             ServiceProvider = new ServiceCollection()
-                .AddLogging()
+                .AddLogging(builder => { builder.AddProvider(new PreviewGeneratorLoggerProvider()); })
                 .AddSenseNetClientTokenStore()
                 .BuildServiceProvider();
 
