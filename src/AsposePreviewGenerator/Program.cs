@@ -19,6 +19,8 @@ using SenseNet.Preview.Aspose.PreviewImageGenerators;
 using AsposeTools = SenseNet.Preview.Aspose.PreviewImageGenerators.Tools;
 using SenseNet.TaskManagement.Core;
 using SenseNet.Tools;
+using SNaaS.Client.Security;
+using SNaaS.Extensions.DependencyInjection;
 using ServerContext = SenseNet.Client.ServerContext;
 using AsposeWords = Aspose.Words;
 using AsposeImaging = Aspose.Imaging;
@@ -90,7 +92,8 @@ namespace SenseNet.Preview.Aspose.AsposePreviewGenerator
 
             ServiceProvider = new ServiceCollection()
                 .AddLogging(builder => { builder.AddProvider(new PreviewGeneratorLoggerProvider()); })
-                .AddSenseNetClientTokenStore()
+                .ConfigureSnaasOptions(configuration)
+                .AddSnaasSecretStore()
                 .BuildServiceProvider();
 
             SnTrace.EnableAll();
@@ -101,27 +104,21 @@ namespace SenseNet.Preview.Aspose.AsposePreviewGenerator
             ServicePointManager.DefaultConnectionLimit = 10;
 
             ClientContext.Current.ChunkSizeInBytes = Config.Upload.ChunkSize;
-            ClientContext.Current.AddServer(new ServerContext
-            {
-                Url = SiteUrl,
-                IsTrusted = Config.Environment.IsDevelopment
-            });
             
             try
             {
-                var tokenStore = ServiceProvider.GetRequiredService<TokenStore>();
-                var secret = string.IsNullOrEmpty(Password) ? "secret" : Password;
-                var token = await tokenStore.GetTokenAsync(ClientContext.Current.Server, secret);
+                var secretStore = ServiceProvider.GetService<ISecretStore>();
+                var server = await secretStore.GetServerContextAsync(SiteUrl).ConfigureAwait(false);
 
-                ClientContext.Current.Server.Authentication.AccessToken = token;
+                if (string.IsNullOrEmpty(server?.Authentication?.AccessToken))
+                    Logger.WriteWarning(ContentId, 0,
+                        $"Access token could not be retrieved for {SiteUrl}. " +
+                        "This will prevent us saving images.");
 
-                if (string.IsNullOrEmpty(token))
-                {
-                    SnTrace.System.Write("Access token is empty, fallback to user name and password.");
+                //UNDONE: test with certificate in a non-trusted environment
+                //server.IsTrusted = Config.Environment.IsDevelopment;
 
-                    ClientContext.Current.Server.Username = Username;
-                    ClientContext.Current.Server.Password = Password;
-                }
+                ClientContext.Current.AddServer(server);
             }
             catch (Exception ex)
             {
