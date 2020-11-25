@@ -35,6 +35,7 @@
     <PackageReference Include="SenseNet.Preview" Version="7.2.0" />
     <PackageReference Include="SenseNet.TaskManagement.Core" Version="2.2.0" />
     <PackageReference Include="SenseNet.Tools" Version="3.2.6" />
+    <PackageReference Include="SkiaSharp.NativeAssets.Linux.NoDependencies" Version="2.80.2" />
   </ItemGroup>
 
   <ItemGroup>
