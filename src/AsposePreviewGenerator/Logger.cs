@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Diagnostics;
+using Microsoft.Extensions.Logging;
 using SenseNet.Client;
 using SenseNet.Diagnostics;
 using SenseNet.TaskManagement.Core;
@@ -8,13 +9,23 @@ namespace SenseNet.Preview.Aspose.AsposePreviewGenerator
 {
     internal class Logger
     {
+        internal static ILogger Instance { get; set; }
         private static readonly string LOG_PREFIX = "#AsposePreviewGenerator> ";
+
+        internal static void WriteTrace(string message)
+        {
+            WriteTrace(null, 0, 0, message);
+        }
+        internal static void WriteTrace(string repository, int contentId, int page, string message)
+        {
+            Instance?.LogTrace($"{LOG_PREFIX} {message} Repo: {repository} Content id: {contentId}, page number: {page}");
+        }
 
         internal static void WriteInfo(int contentId, int page, string message)
         {
             var msg = $"{LOG_PREFIX} {message} Content id: {contentId}, page number: {page}";
             Trace.WriteLine(msg);
-            SnTrace.TaskManagement.Write(msg);
+            Instance?.LogInformation(msg);
         }
 
         internal static void WriteWarning(int contentId, int page, string message)
@@ -44,6 +55,8 @@ namespace SenseNet.Preview.Aspose.AsposePreviewGenerator
                     Version = version,
                     Message = msg
                 }));
+
+            Instance?.LogError(ex, $"Error during preview generation. {msg} {FormatException(ex)}");
         }
 
         private static string FormatException(Exception ex)
