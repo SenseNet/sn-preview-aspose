@@ -10,18 +10,16 @@ using System.Threading;
 using System.Threading.Tasks;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
 using SenseNet.Client;
-using SenseNet.Client.Authentication;
-using SenseNet.Diagnostics;
-using SenseNet.Extensions.DependencyInjection;
 using SenseNet.Preview.Aspose.PreviewImageGenerators;
 using AsposeTools = SenseNet.Preview.Aspose.PreviewImageGenerators.Tools;
 using SenseNet.TaskManagement.Core;
 using SenseNet.Tools;
+using Serilog;
 using SNaaS.Client.Security;
 using SNaaS.Extensions.DependencyInjection;
-using ServerContext = SenseNet.Client.ServerContext;
 using AsposeWords = Aspose.Words;
 using AsposeImaging = Aspose.Imaging;
 using AsposeDiagram = Aspose.Diagram;
@@ -30,7 +28,7 @@ using AsposePdf = Aspose.Pdf;
 using AsposeSlides = Aspose.Slides;
 using AsposeEmail = Aspose.Email;
 using AsposeTasks = Aspose.Tasks;
-    
+
 
 namespace SenseNet.Preview.Aspose.AsposePreviewGenerator
 {
@@ -44,7 +42,7 @@ namespace SenseNet.Preview.Aspose.AsposePreviewGenerator
         public static string Username { get; set; }
         public static string Password { get; set; }
 
-        private static ServiceProvider ServiceProvider { get; set; }
+        private static IServiceProvider ServiceProvider { get; set; }
 
         // shortcut
         public static Configuration Config => Configuration.Instance;
@@ -58,9 +56,12 @@ namespace SenseNet.Preview.Aspose.AsposePreviewGenerator
         {
             if (!ParseParameters(args))
             {
-                Logger.WriteWarning(ContentId, 0, "Aspose preview generator process arguments are not correct.");
+                Logger.WriteError(ContentId, 0, "Aspose preview generator process arguments are not correct.");
                 return;
             }
+
+            var host = CreateHostBuilder(args).Build();
+            ServiceProvider = host.Services;
 
             if (!await InitializeAsync())
                 return;
@@ -85,22 +86,9 @@ namespace SenseNet.Preview.Aspose.AsposePreviewGenerator
 
         private static async Task<bool> InitializeAsync()
         {
-            var configuration = new ConfigurationBuilder()
-                .AddJsonFile("appsettings.json", optional: true, reloadOnChange: true)
-                .AddEnvironmentVariables()
-                .Build();
-
-            ServiceProvider = new ServiceCollection()
-                .AddLogging(builder => { builder.AddProvider(new PreviewGeneratorLoggerProvider()); })
-                .ConfigureSnaasOptions(configuration)
-                .AddSnaasSecretStore()
-                .BuildServiceProvider();
-
-            SnTrace.EnableAll();
-            Configuration.Initialize(configuration);
-
-            SnTrace.SnTracers.Add(new SnFileSystemTracer());
-
+            Logger.Instance = ServiceProvider.GetService<ILogger<Program>>();
+            Configuration.Initialize(ServiceProvider.GetService<IConfiguration>());
+            
             ServicePointManager.DefaultConnectionLimit = 10;
 
             ClientContext.Current.ChunkSizeInBytes = Config.Upload.ChunkSize;
@@ -129,6 +117,28 @@ namespace SenseNet.Preview.Aspose.AsposePreviewGenerator
 
             return true;
         }
+
+        static IHostBuilder CreateHostBuilder(string[] args) =>
+            Host.CreateDefaultBuilder(args)
+                .ConfigureHostConfiguration(builder => builder
+                    .AddJsonFile("appsettings.json", true, true)
+                    .AddUserSecrets<Program>()
+                    .AddEnvironmentVariables()
+                )
+                .ConfigureAppConfiguration(builder => builder
+                    .AddJsonFile("appsettings.json", true, true)
+                    .AddUserSecrets<Program>()
+                    .AddEnvironmentVariables()
+                )
+                .ConfigureServices((hb, services) => services
+                    .AddLogging(logging =>
+                    {
+                        logging.AddSerilog(new LoggerConfiguration()
+                            .ReadFrom.Configuration(hb.Configuration)
+                            .CreateLogger());
+                    })
+                    .ConfigureSnaasOptions(hb.Configuration)
+                    .AddSnaasSecretStore());
 
         // ================================================================================================== Preview generation
 

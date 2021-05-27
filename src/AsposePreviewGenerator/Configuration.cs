@@ -48,10 +48,10 @@ namespace SenseNet.Preview.Aspose.AsposePreviewGenerator
             }
             catch (Exception ex)
             {
-                SnTrace.System.WriteError($"Error loading configuration: {ex.Message}. Working with defaults.");
+                Logger.WriteTrace($"Error loading configuration: {ex.Message}. Working with defaults.");
             }
 
-            SnTrace.System.Write($"Configuration: chunk size: {configuration.Upload.ChunkSize}, " +
+            Logger.WriteTrace($"Configuration: chunk size: {configuration.Upload.ChunkSize}, " +
                                  $"preview resolution: {configuration.ImageGeneration.PreviewResolution}");
             
             Instance = configuration;
