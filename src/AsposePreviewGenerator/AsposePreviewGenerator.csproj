@@ -20,6 +20,7 @@
     <Description>Preview generator tool built on the Aspose libraries for generating preview images for the sensenet platform.</Description>
     <LangVersion>latest</LangVersion>
     <ApplicationIcon>sn.ico</ApplicationIcon>
+    <UserSecretsId>870b6f4c-77e2-4ec4-8762-ca8a59bbfbb3</UserSecretsId>
   </PropertyGroup>
 
   <ItemGroup>
@@ -28,6 +29,7 @@
     <PackageReference Include="Microsoft.Extensions.Configuration.Binder" Version="3.1.15" />
     <PackageReference Include="Microsoft.Extensions.Configuration.EnvironmentVariables" Version="3.1.15" />
     <PackageReference Include="Microsoft.Extensions.Configuration.Json" Version="3.1.15" />
+    <PackageReference Include="Microsoft.Extensions.Configuration.UserSecrets" Version="3.1.15" />
     <PackageReference Include="Microsoft.Extensions.DependencyInjection" Version="3.1.15" />
     <PackageReference Include="Microsoft.Extensions.Hosting" Version="3.1.15" />
     <PackageReference Include="Microsoft.Extensions.Logging" Version="3.1.15" />
