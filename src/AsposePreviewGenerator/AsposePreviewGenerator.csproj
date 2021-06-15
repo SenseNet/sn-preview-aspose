@@ -3,7 +3,7 @@
   <PropertyGroup>
     <OutputType>Exe</OutputType>
     <TargetFramework>netcoreapp3.1</TargetFramework>
-    <Version>7.2.3</Version>
+    <Version>7.2.3.1</Version>
     <RootNamespace>SenseNet.Preview.Aspose.AsposePreviewGenerator</RootNamespace>
     <AssemblyName>AsposePreviewGenerator</AssemblyName>
     <Authors>kavics,tusmester,aniko</Authors>
@@ -25,18 +25,14 @@
 
   <ItemGroup>
     <PackageReference Include="IdentityModel" Version="4.2.0" />
-    <PackageReference Include="Microsoft.Extensions.Configuration" Version="3.1.15" />
-    <PackageReference Include="Microsoft.Extensions.Configuration.Binder" Version="3.1.15" />
     <PackageReference Include="Microsoft.Extensions.Configuration.EnvironmentVariables" Version="3.1.15" />
     <PackageReference Include="Microsoft.Extensions.Configuration.Json" Version="3.1.15" />
     <PackageReference Include="Microsoft.Extensions.Configuration.UserSecrets" Version="3.1.15" />
-    <PackageReference Include="Microsoft.Extensions.DependencyInjection" Version="3.1.15" />
     <PackageReference Include="Microsoft.Extensions.Hosting" Version="3.1.15" />
-    <PackageReference Include="Microsoft.Extensions.Logging" Version="3.1.15" />
     <PackageReference Include="Newtonsoft.Json" Version="12.0.3" />
     <PackageReference Include="SenseNet.Client" Version="2.0.11" />
-    <PackageReference Include="SenseNet.Preview" Version="7.2.0" />
-    <PackageReference Include="SenseNet.TaskManagement.Core" Version="2.2.0" />
+    <PackageReference Include="SenseNet.Preview" Version="7.2.0.1" />
+    <PackageReference Include="SenseNet.TaskManagement.Core" Version="2.2.1" />
     <PackageReference Include="SenseNet.Tools" Version="3.2.7" />
     <PackageReference Include="Serilog.Extensions.Logging" Version="3.0.1" />
     <PackageReference Include="Serilog.Settings.Configuration" Version="3.1.0" />
