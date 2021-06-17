@@ -120,16 +120,6 @@ namespace SenseNet.Preview.Aspose.AsposePreviewGenerator
 
         static IHostBuilder CreateHostBuilder(string[] args) =>
             Host.CreateDefaultBuilder(args)
-                .ConfigureHostConfiguration(builder => builder
-                    .AddJsonFile("appsettings.json", true, true)
-                    .AddUserSecrets<Program>()
-                    .AddEnvironmentVariables()
-                )
-                .ConfigureAppConfiguration(builder => builder
-                    .AddJsonFile("appsettings.json", true, true)
-                    .AddUserSecrets<Program>()
-                    .AddEnvironmentVariables()
-                )
                 .ConfigureServices((hb, services) => services
                     .AddLogging(logging =>
                     {
