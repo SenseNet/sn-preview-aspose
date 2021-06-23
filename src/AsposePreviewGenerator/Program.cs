@@ -212,6 +212,8 @@ namespace SenseNet.Preview.Aspose.AsposePreviewGenerator
 
             var extension = contentPath.Substring(contentPath.LastIndexOf('.'));
 
+            Logger.WriteTrace(SiteUrl, ContentId, 0, "Generating images.");
+
             await PreviewImageGenerator.GeneratePreviewAsync(extension, docStream, new PreviewGenerationContext(
                 ContentId, previewsFolderId, StartIndex, MaxPreviewCount, 
                 Config.ImageGeneration.PreviewResolution, Version), cancellationToken).ConfigureAwait(false);
@@ -225,6 +227,8 @@ namespace SenseNet.Preview.Aspose.AsposePreviewGenerator
         {
             try
             {
+                Logger.WriteTrace(SiteUrl, ContentId, 0, "Getting preview folder info.");
+
                 var previewsFolder = await GetResponseJsonAsync(new ODataRequest
                     {
                         ContentId = ContentId,
@@ -245,6 +249,8 @@ namespace SenseNet.Preview.Aspose.AsposePreviewGenerator
         }
         private static async Task<Stream> GetBinaryAsync()
         {
+            Logger.WriteTrace(SiteUrl, ContentId, 0, "Downloading file.");
+
             var documentStream = new MemoryStream();
 
             try
@@ -276,6 +282,8 @@ namespace SenseNet.Preview.Aspose.AsposePreviewGenerator
         }
         private static Task<Content> GetFileInfoAsync()
         {
+            Logger.WriteTrace(SiteUrl, ContentId, 0, "Downloading file info.");
+
             return Content.LoadAsync(new ODataRequest
             {
                 ContentId = ContentId,
@@ -297,10 +305,14 @@ namespace SenseNet.Preview.Aspose.AsposePreviewGenerator
             // EmptyDocument = 0,
             // Ready = 1
 
+            Logger.WriteTrace(SiteUrl, ContentId, 0, $"Setting preview status to {status}.");
+
             return PostAsync("SetPreviewStatus", new {status});
         }
         public static Task SetPageCountAsync(int pageCount)
         {
+            Logger.WriteTrace(SiteUrl, ContentId, 0, $"Setting page count to {pageCount}.");
+
             return PostAsync("SetPageCount", new { pageCount });
         }
 
@@ -308,6 +320,8 @@ namespace SenseNet.Preview.Aspose.AsposePreviewGenerator
             CancellationToken cancellationToken)
         {
             cancellationToken.ThrowIfCancellationRequested();
+
+            Logger.WriteTrace(SiteUrl, ContentId, 0, "Saving main preview image.");
 
             // save main preview image
             await SaveImageStreamAsync(imageStream, GetPreviewNameFromPageNumber(page), page, 
@@ -317,6 +331,8 @@ namespace SenseNet.Preview.Aspose.AsposePreviewGenerator
             _generatingPreviewSubtask.Progress(progress, 100, progress + 10, 110);
 
             cancellationToken.ThrowIfCancellationRequested();
+
+            Logger.WriteTrace(SiteUrl, ContentId, 0, "Saving thumbnail image.");
 
             // save smaller image for thumbnail
             await SaveImageStreamAsync(imageStream, GetThumbnailNameFromPageNumber(page), page, 
@@ -400,6 +416,8 @@ namespace SenseNet.Preview.Aspose.AsposePreviewGenerator
         private static Task<int> UploadImageAsync(Stream imageStream, int previewsFolderId, string imageName,
             CancellationToken cancellationToken)
         {
+            Logger.WriteTrace(SiteUrl, ContentId, 0, $"Uploading image {imageName}.");
+
             return Retrier.RetryAsync(REQUEST_RETRY_COUNT, 50, async () =>
             {
                 imageStream.Seek(0, SeekOrigin.Begin);
@@ -449,6 +467,8 @@ namespace SenseNet.Preview.Aspose.AsposePreviewGenerator
                 return image;
 
             ComputeResizedDimensions(image.Width, image.Height, maxWidth, maxHeight, out var newWidth, out var newHeight);
+
+            Logger.WriteTrace(SiteUrl, ContentId, 0, "Resizing image.");
 
             try
             {
@@ -584,6 +604,8 @@ namespace SenseNet.Preview.Aspose.AsposePreviewGenerator
 
         private static void CheckLicense(string fileName)
         {
+            Logger.WriteTrace(SiteUrl, ContentId, 0, "Checking Aspose license.");
+
             var extension = fileName.Substring(fileName.LastIndexOf('.')).ToLower();
 
             try
