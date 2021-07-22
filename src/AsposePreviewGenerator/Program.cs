@@ -48,7 +48,8 @@ namespace SenseNet.Preview.Aspose.AsposePreviewGenerator
         // shortcut
         public static Configuration Config => Configuration.Instance;
 
-        private static int REQUEST_RETRY_COUNT = 3;
+        private static int REQUEST_RETRY_COUNT = 10;
+        private static int DELAY_TOO_MANY_REQUESTS = 2000;
         private static string EmptyImage = "empty.png";
 
         private static SnSubtask _generatingPreviewSubtask;
@@ -436,6 +437,10 @@ namespace SenseNet.Preview.Aspose.AsposePreviewGenerator
 
                 cancellationToken.ThrowIfCancellationRequested();
 
+                // if the server is too busy, wait longer
+                if (ex is ClientException cex && cex.StatusCode == HttpStatusCode.TooManyRequests)
+                    Task.Delay(DELAY_TOO_MANY_REQUESTS, cancellationToken);
+
                 return false;
             });
         }
@@ -543,6 +548,10 @@ namespace SenseNet.Preview.Aspose.AsposePreviewGenerator
                     if (count == 1 || AsposeTools.ContentNotFound(ex))
                         throw ex;
 
+                    // if the server is too busy, wait longer
+                    if (ex is ClientException cex && cex.StatusCode == HttpStatusCode.TooManyRequests)
+                        Task.Delay(DELAY_TOO_MANY_REQUESTS);
+
                     // failed, but give them a new chance
                     return false;
                 });
@@ -559,6 +568,10 @@ namespace SenseNet.Preview.Aspose.AsposePreviewGenerator
                     // last try: throw the exception
                     if (count == 1 || AsposeTools.ContentNotFound(ex))
                         throw ex;
+
+                    // if the server is too busy, wait longer
+                    if (ex is ClientException cex && cex.StatusCode == HttpStatusCode.TooManyRequests)
+                        Task.Delay(DELAY_TOO_MANY_REQUESTS);
 
                     // failed, but give them a new chance
                     return false;
