@@ -4,16 +4,26 @@ using System.Threading;
 using System.Threading.Tasks;
 using Aspose.Pdf;
 using Aspose.Pdf.Devices;
+using Microsoft.Extensions.Logging;
 
 namespace SenseNet.Preview.Aspose.PreviewImageGenerators
 {
     public class PdfPreviewImageGenerator : PreviewImageGenerator
     {
+        private readonly ILogger<PdfPreviewImageGenerator> _logger;
+
+        public PdfPreviewImageGenerator(ILogger<PdfPreviewImageGenerator> logger) : base(logger)
+        {
+            _logger = logger;
+        }
+
         public override string[] KnownExtensions { get; } = { ".pdf" };
 
         public override async Task GeneratePreviewAsync(Stream docStream, IPreviewGenerationContext context,
             CancellationToken cancellationToken)
         {
+            _logger.LogTrace($"Loading pdf document from stream (id {context.ContentId}).");
+
             var document = new Document(docStream);
 
             if (context.StartIndex == 0)
@@ -31,6 +41,8 @@ namespace SenseNet.Preview.Aspose.PreviewImageGenerators
                 {
                     try
                     {
+                        _logger.LogTrace($"Loading page {i} of file {context.ContentId} (pdf)");
+
                         var pngDevice = new PngDevice(new Resolution(context.PreviewResolution, context.PreviewResolution));
                         pngDevice.Process(document.Pages[i + 1], imgStream);
                         if (imgStream.Length == 0)

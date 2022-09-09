@@ -53,6 +53,7 @@ namespace SenseNet.Preview.Aspose.AsposePreviewGenerator
         private static string EmptyImage = "empty.png";
 
         private static SnSubtask _generatingPreviewSubtask;
+        private static IPreviewGeneratorManager _previewManager;
 
         private static async Task Main(string[] args)
         {
@@ -89,8 +90,12 @@ namespace SenseNet.Preview.Aspose.AsposePreviewGenerator
         private static async Task<bool> InitializeAsync()
         {
             Logger.Instance = ServiceProvider.GetService<ILogger<Program>>();
+            if (Logger.Instance == null)
+                Logger.WriteWarning(0, 0, "Logger is not available.");
+
             Configuration.Initialize(ServiceProvider.GetService<IConfiguration>());
-            
+            _previewManager = ServiceProvider.GetService<IPreviewGeneratorManager>();
+
             ServicePointManager.DefaultConnectionLimit = 10;
 
             ClientContext.Current.ChunkSizeInBytes = Config.Upload.ChunkSize;
@@ -135,7 +140,9 @@ namespace SenseNet.Preview.Aspose.AsposePreviewGenerator
                             .ReadFrom.Configuration(hb.Configuration)
                             .CreateLogger());
                     })
-                    .AddSenseNetClientTokenStore());
+                    .AddSenseNetClientTokenStore()
+                    .AddSenseNetPreview()
+                    .AddSenseNetAsposePreviewGenerators());
 
         // ================================================================================================== Preview generation
 
@@ -215,7 +222,7 @@ namespace SenseNet.Preview.Aspose.AsposePreviewGenerator
 
             Logger.WriteTrace(SiteUrl, ContentId, 0, "Generating images.");
 
-            await PreviewImageGenerator.GeneratePreviewAsync(extension, docStream, new PreviewGenerationContext(
+            await _previewManager.GeneratePreviewAsync(extension, docStream, new PreviewGenerationContext(
                 ContentId, previewsFolderId, StartIndex, MaxPreviewCount, 
                 Config.ImageGeneration.PreviewResolution, Version), cancellationToken).ConfigureAwait(false);
 
@@ -396,6 +403,8 @@ namespace SenseNet.Preview.Aspose.AsposePreviewGenerator
         }
         public static async Task SaveEmptyPreviewAsync(int page, int previewsFolderId, CancellationToken cancellationToken)
         {
+            Logger.WriteTrace($"Saving empty image for page {page} of document {ContentId} in repository {SiteUrl}");
+
             if (File.Exists(EmptyImage))
             {
                 using var emptyImage = Image.FromFile(EmptyImage);

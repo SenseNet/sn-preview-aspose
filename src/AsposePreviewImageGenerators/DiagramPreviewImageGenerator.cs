@@ -4,11 +4,19 @@ using System.Threading;
 using System.Threading.Tasks;
 using Aspose.Diagram;
 using Aspose.Diagram.Saving;
+using Microsoft.Extensions.Logging;
 
 namespace SenseNet.Preview.Aspose.PreviewImageGenerators
 {
     public class DiagramPreviewImageGenerator : PreviewImageGenerator
     {
+        private readonly ILogger<DiagramPreviewImageGenerator> _logger;
+
+        public DiagramPreviewImageGenerator(ILogger<DiagramPreviewImageGenerator> logger) : base(logger)
+        {
+            _logger = logger;
+        }
+
         public override string[] KnownExtensions { get; } = { ".vdw", ".vdx", ".vsd", ".vss", ".vst", ".vsx", ".vtx" };
 
         public override async Task GeneratePreviewAsync(Stream docStream, IPreviewGenerationContext context, 
@@ -29,6 +37,8 @@ namespace SenseNet.Preview.Aspose.PreviewImageGenerators
 
                 try
                 {
+                    _logger.LogTrace($"Loading page {i} of file {context.ContentId} (diagram)");
+
                     using (var imgStream = new MemoryStream())
                     {
                         var options = new ImageSaveOptions(SaveFileFormat.PNG)
@@ -39,7 +49,10 @@ namespace SenseNet.Preview.Aspose.PreviewImageGenerators
 
                         document.Save(imgStream, options);
                         if (imgStream.Length == 0)
+                        {
+                            _logger.LogTrace($"Page {i} of file {context.ContentId} is empty.");
                             continue;
+                        }
 
                         await context.SavePreviewAndThumbnailAsync(imgStream, i + 1, cancellationToken)
                             .ConfigureAwait(false);

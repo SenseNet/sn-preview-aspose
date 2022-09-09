@@ -31,7 +31,7 @@
     <PackageReference Include="Aspose.Tasks" Version="20.4.0" />
     <PackageReference Include="Aspose.Words" Version="20.4.0" />
     <PackageReference Include="SenseNet.Client" Version="2.0.11" />
-    <PackageReference Include="SenseNet.Preview" Version="7.2.1" />
+    <PackageReference Include="SenseNet.Preview" Version="7.2.1.1" />
     <PackageReference Include="SenseNet.Tools" Version="3.2.7" />
   </ItemGroup>
 
