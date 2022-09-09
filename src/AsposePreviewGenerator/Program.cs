@@ -90,6 +90,9 @@ namespace SenseNet.Preview.Aspose.AsposePreviewGenerator
         private static async Task<bool> InitializeAsync()
         {
             Logger.Instance = ServiceProvider.GetService<ILogger<Program>>();
+            if (Logger.Instance == null)
+                Logger.WriteWarning(0, 0, "Logger is not available.");
+
             Configuration.Initialize(ServiceProvider.GetService<IConfiguration>());
             _previewManager = ServiceProvider.GetService<IPreviewGeneratorManager>();
 
@@ -400,6 +403,8 @@ namespace SenseNet.Preview.Aspose.AsposePreviewGenerator
         }
         public static async Task SaveEmptyPreviewAsync(int page, int previewsFolderId, CancellationToken cancellationToken)
         {
+            Logger.WriteTrace($"Saving empty image for page {page} of document {ContentId} in repository {SiteUrl}");
+
             if (File.Exists(EmptyImage))
             {
                 using var emptyImage = Image.FromFile(EmptyImage);

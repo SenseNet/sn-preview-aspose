@@ -26,6 +26,8 @@ namespace SenseNet.Preview.Aspose.PreviewImageGenerators
         {
             docStream.Seek(0, SeekOrigin.Begin);
 
+            _logger.LogTrace($"Loading image from stream (id {context.ContentId}).");
+
             var document = Image.Load(docStream);
 
             if (context.StartIndex == 0)

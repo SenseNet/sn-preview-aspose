@@ -26,6 +26,8 @@ namespace SenseNet.Preview.Aspose.PreviewImageGenerators
         {
             docStream.Seek(0, SeekOrigin.Begin);
 
+            _logger.LogTrace($"Loading tiff image from stream (id {context.ContentId}).");
+
             var document = (TiffImage)Image.Load(docStream);
 
             if (context.StartIndex == 0)
@@ -41,6 +43,8 @@ namespace SenseNet.Preview.Aspose.PreviewImageGenerators
 
                 try
                 {
+                    _logger.LogTrace($"Loading page {i} of tiff image {context.ContentId}.");
+
                     document.ActiveFrame = document.Frames[i];
                     using (var imgStream = new MemoryStream())
                     {

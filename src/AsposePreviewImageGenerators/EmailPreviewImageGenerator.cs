@@ -26,6 +26,8 @@ namespace SenseNet.Preview.Aspose.PreviewImageGenerators
         public override async Task GeneratePreviewAsync(Stream docStream, IPreviewGenerationContext context,
             CancellationToken cancellationToken)
         {
+            _logger.LogTrace($"Loading email from stream (id {context.ContentId}).");
+
             var email = MailMessage.Load(docStream);
 
             using (var emailStream = new MemoryStream())

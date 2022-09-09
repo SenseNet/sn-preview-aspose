@@ -24,6 +24,8 @@ namespace SenseNet.Preview.Aspose.PreviewImageGenerators
         {
             docStream.Seek(0, SeekOrigin.Begin);
 
+            _logger.LogTrace($"Loading presentation from stream (id {context.ContentId}).");
+
             var pres = new Presentation(docStream);
 
             if (context.StartIndex == 0)
@@ -46,6 +48,8 @@ namespace SenseNet.Preview.Aspose.PreviewImageGenerators
 
                 try
                 {
+                    _logger.LogTrace($"Loading page {i} of file {context.ContentId} (presentation)");
+
                     var slide = pres.Slides[i];
 
                     // generate image

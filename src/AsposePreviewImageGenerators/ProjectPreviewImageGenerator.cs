@@ -26,12 +26,16 @@ namespace SenseNet.Preview.Aspose.PreviewImageGenerators
         public override async System.Threading.Tasks.Task GeneratePreviewAsync(Stream docStream, IPreviewGenerationContext context,
             CancellationToken cancellationToken)
         {
+            _logger.LogTrace($"Loading project document from stream (id {context.ContentId}).");
+
             var document = new Project(docStream);
             
             // This is the simplest way to create a reasonably readable 
             // preview from a project file: convert it to a PDF first.
             using (var pdfStream = new MemoryStream())
             {
+                _logger.LogTrace($"Saving project document as pdf (id {context.ContentId}).");
+
                 // save project file in memory as a pdf document
                 document.Save(pdfStream, SaveFileFormat.PDF);
 
