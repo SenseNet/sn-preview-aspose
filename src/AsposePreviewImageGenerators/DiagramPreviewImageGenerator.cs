@@ -4,11 +4,19 @@ using System.Threading;
 using System.Threading.Tasks;
 using Aspose.Diagram;
 using Aspose.Diagram.Saving;
+using Microsoft.Extensions.Logging;
 
 namespace SenseNet.Preview.Aspose.PreviewImageGenerators
 {
     public class DiagramPreviewImageGenerator : PreviewImageGenerator
     {
+        private readonly ILogger<DiagramPreviewImageGenerator> _logger;
+
+        public DiagramPreviewImageGenerator(ILogger<DiagramPreviewImageGenerator> logger) : base(logger)
+        {
+            _logger = logger;
+        }
+
         public override string[] KnownExtensions { get; } = { ".vdw", ".vdx", ".vsd", ".vss", ".vst", ".vsx", ".vtx" };
 
         public override async Task GeneratePreviewAsync(Stream docStream, IPreviewGenerationContext context, 

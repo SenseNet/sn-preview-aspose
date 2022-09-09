@@ -4,11 +4,19 @@ using System.Threading;
 using System.Threading.Tasks;
 using Aspose.Words;
 using Aspose.Words.Saving;
+using Microsoft.Extensions.Logging;
 
 namespace SenseNet.Preview.Aspose.PreviewImageGenerators
 {
     public class WordPreviewImageGenerator : PreviewImageGenerator
     {
+        private readonly ILogger<WordPreviewImageGenerator> _logger;
+
+        public WordPreviewImageGenerator(ILogger<WordPreviewImageGenerator> logger) : base(logger)
+        {
+            _logger = logger;
+        }
+
         public override string[] KnownExtensions { get; } = { ".doc", ".docx", ".odt", ".rtf", ".txt", ".xml", ".csv" };
 
         public override async Task GeneratePreviewAsync(Stream docStream, IPreviewGenerationContext context,

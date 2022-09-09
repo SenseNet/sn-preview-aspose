@@ -1,7 +1,5 @@
 ﻿using System;
-using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
-using SenseNet.ContentRepository.Storage;
 using SenseNet.Preview.Aspose;
 using SenseNet.Tools;
 
@@ -33,7 +31,10 @@ namespace SenseNet.Extensions.DependencyInjection
                 configureAspose?.Invoke(options);
             });
 
-            return services.AddSenseNetDocumentPreviewProvider<AsposePreviewProvider>();
+            return services
+                .AddSenseNetPreview()
+                .AddSenseNetDocumentPreviewProvider<AsposePreviewProvider>()
+                .AddSenseNetAsposePreviewGenerators();
         }
     }
 }

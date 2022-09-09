@@ -7,11 +7,19 @@ using System.Threading.Tasks;
 using Aspose.Cells;
 using Aspose.Cells.Drawing;
 using Aspose.Cells.Rendering;
+using Microsoft.Extensions.Logging;
 
 namespace SenseNet.Preview.Aspose.PreviewImageGenerators
 {
     public class WorkBookPreviewImageGenerator : PreviewImageGenerator
     {
+        private readonly ILogger<WorkBookPreviewImageGenerator> _logger;
+
+        public WorkBookPreviewImageGenerator(ILogger<WorkBookPreviewImageGenerator> logger) : base(logger)
+        {
+            _logger = logger;
+        }
+
         public override string[] KnownExtensions { get; } = { ".ods", ".xls", ".xlsm", ".xlsx", ".xltm", ".xltx" };
 
         public override async Task GeneratePreviewAsync(Stream docStream, IPreviewGenerationContext context,

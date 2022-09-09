@@ -31,7 +31,7 @@
     <PackageReference Include="Microsoft.Extensions.Hosting" Version="3.1.15" />
     <PackageReference Include="Newtonsoft.Json" Version="12.0.3" />
     <PackageReference Include="SenseNet.Client" Version="2.0.11" />
-    <PackageReference Include="SenseNet.Preview" Version="7.2.1" />
+    <PackageReference Include="SenseNet.Preview" Version="7.2.1.1" />
     <PackageReference Include="SenseNet.TaskManagement.Core" Version="2.2.1" />
     <PackageReference Include="SenseNet.Tools" Version="3.2.7" />
     <PackageReference Include="Serilog.Extensions.Logging" Version="3.0.1" />

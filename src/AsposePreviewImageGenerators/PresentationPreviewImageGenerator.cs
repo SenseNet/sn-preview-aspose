@@ -4,11 +4,19 @@ using System.IO;
 using System.Threading;
 using System.Threading.Tasks;
 using Aspose.Slides;
+using Microsoft.Extensions.Logging;
 
 namespace SenseNet.Preview.Aspose.PreviewImageGenerators
 {
     public class PresentationPreviewImageGenerator : PreviewImageGenerator
     {
+        private readonly ILogger<PresentationPreviewImageGenerator> _logger;
+
+        public PresentationPreviewImageGenerator(ILogger<PresentationPreviewImageGenerator> logger) : base(logger)
+        {
+            _logger = logger;
+        }
+
         public override string[] KnownExtensions { get; } = { ".pot", ".pps", ".ppt", ".potx", ".ppsx", ".pptx", ".odp" };
 
         public override async Task GeneratePreviewAsync(Stream docStream, IPreviewGenerationContext context,

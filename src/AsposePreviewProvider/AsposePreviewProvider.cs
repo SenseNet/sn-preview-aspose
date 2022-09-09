@@ -12,7 +12,6 @@ using AsposeTasks = Aspose.Tasks;
 using AsposeWords = Aspose.Words;
 using Aspose.Words.Drawing;
 using Microsoft.Extensions.Options;
-using SenseNet.BackgroundOperations;
 using SenseNet.ContentRepository;
 using SenseNet.Diagnostics;
 using SenseNet.Extensions.DependencyInjection;
@@ -25,6 +24,7 @@ namespace SenseNet.Preview.Aspose
 {
     public class AsposePreviewProvider : DocumentPreviewProvider
     {
+        private readonly IPreviewGeneratorManager _previewManager;
         public static readonly string DefaultPreviewGeneratorTaskName = "AsposePreviewGenerator";
         public static readonly string DefaultPreviewGeneratorTaskTitle = "Generating preview";
 
@@ -36,11 +36,13 @@ namespace SenseNet.Preview.Aspose
         public bool SkipLicenseCheck { get; set; }
 
         public AsposePreviewProvider(
+            IPreviewGeneratorManager previewManager,
             IOptions<AsposeOptions> asposeOptions,
             IOptions<TaskManagementOptions> taskManagementOptions,
             ITaskManager taskManager)
             : base(taskManagementOptions, taskManager)
         {
+            _previewManager = previewManager;
             if (asposeOptions.Value != null)
                 SkipLicenseCheck = asposeOptions.Value.SkipLicenseCheck;
         }
@@ -50,12 +52,12 @@ namespace SenseNet.Preview.Aspose
         public override string GetPreviewGeneratorTaskName(string contentPath)
         {
             var ext = Path.GetExtension(STORAGE.RepositoryPath.GetFileName(contentPath));
-            return PreviewImageGenerator.GetTaskNameByFileNameExtension(ext) ?? DefaultPreviewGeneratorTaskName;
+            return _previewManager.GetTaskNameByFileNameExtension(ext) ?? DefaultPreviewGeneratorTaskName;
         }
         public override string GetPreviewGeneratorTaskTitle(string contentPath)
         {
             var ext = Path.GetExtension(STORAGE.RepositoryPath.GetFileName(contentPath));
-            return PreviewImageGenerator.GetTaskTitleByFileNameExtension(ext) ?? DefaultPreviewGeneratorTaskTitle;
+            return _previewManager.GetTaskTitleByFileNameExtension(ext) ?? DefaultPreviewGeneratorTaskTitle;
         }
 
         private static string[] _supportedTaskNames;
@@ -65,7 +67,7 @@ namespace SenseNet.Preview.Aspose
             {
                 // Collect custom task names from the generator implementations (e.g. name of
                 // a dedicated task for generating preview images for 3ds files)
-                var supportedTaskNames = PreviewImageGenerator.GetSupportedCustomTaskNames().ToList();
+                var supportedTaskNames = _previewManager.GetSupportedCustomTaskNames().ToList();
 
                 // extend the list with the default task name
                 supportedTaskNames.Add(DefaultPreviewGeneratorTaskName);
@@ -79,7 +81,7 @@ namespace SenseNet.Preview.Aspose
         
         public override bool IsContentSupported(STORAGE.Node content)
         {
-            return PreviewImageGenerator.IsSupportedExtension(ContentNamingProvider.GetFileExtension(content.Name));
+            return _previewManager.IsSupportedExtension(ContentNamingProvider.GetFileExtension(content.Name));
         }
 
         protected override Stream GetPreviewImagesDocumentStream(Content content, IEnumerable<SNCR.Image> previewImages, DocumentFormat documentFormat, RestrictionType? restrictionType = null)

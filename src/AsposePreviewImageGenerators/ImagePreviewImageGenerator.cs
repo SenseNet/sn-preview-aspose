@@ -5,12 +5,20 @@ using System.Threading;
 using System.Threading.Tasks;
 using Aspose.Imaging;
 using Aspose.Imaging.ImageOptions;
+using Microsoft.Extensions.Logging;
 using SeekOrigin = System.IO.SeekOrigin;
 
 namespace SenseNet.Preview.Aspose.PreviewImageGenerators
 {
     public class ImagePreviewImageGenerator : PreviewImageGenerator
     {
+        private readonly ILogger<ImagePreviewImageGenerator> _logger;
+
+        public ImagePreviewImageGenerator(ILogger<ImagePreviewImageGenerator> logger) : base(logger)
+        {
+            _logger = logger;
+        }
+
         public override string[] KnownExtensions { get; } = { ".gif", ".jpg", ".jpeg", ".bmp", ".png", ".svg", ".exif", ".icon" };
 
         public override async Task GeneratePreviewAsync(Stream docStream, IPreviewGenerationContext context,

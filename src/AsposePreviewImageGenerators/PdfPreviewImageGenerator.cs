@@ -4,11 +4,19 @@ using System.Threading;
 using System.Threading.Tasks;
 using Aspose.Pdf;
 using Aspose.Pdf.Devices;
+using Microsoft.Extensions.Logging;
 
 namespace SenseNet.Preview.Aspose.PreviewImageGenerators
 {
     public class PdfPreviewImageGenerator : PreviewImageGenerator
     {
+        private readonly ILogger<PdfPreviewImageGenerator> _logger;
+
+        public PdfPreviewImageGenerator(ILogger<PdfPreviewImageGenerator> logger) : base(logger)
+        {
+            _logger = logger;
+        }
+
         public override string[] KnownExtensions { get; } = { ".pdf" };
 
         public override async Task GeneratePreviewAsync(Stream docStream, IPreviewGenerationContext context,
