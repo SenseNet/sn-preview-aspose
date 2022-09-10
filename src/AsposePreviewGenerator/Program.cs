@@ -66,8 +66,16 @@ namespace SenseNet.Preview.Aspose.AsposePreviewGenerator
             var host = CreateHostBuilder(args).Build();
             ServiceProvider = host.Services;
 
-            if (!await InitializeAsync())
+            try
+            {
+                if (!await InitializeAsync())
+                    return;
+            }
+            catch (Exception ex)
+            {
+                Logger.WriteError(ContentId, 0, ex: ex, message:"Error during service initialization.", startIndex: StartIndex, version: Version);
                 return;
+            }
 
             try
             {

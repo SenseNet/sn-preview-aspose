@@ -1,6 +1,4 @@
-﻿using System.Collections.Generic;
-using System.IO;
-using System.Linq;
+﻿using System.IO;
 using System.Threading;
 using Aspose.Tasks;
 using Aspose.Tasks.Saving;
@@ -13,11 +11,13 @@ namespace SenseNet.Preview.Aspose.PreviewImageGenerators
         private readonly ILogger<ProjectPreviewImageGenerator> _logger;
         private readonly PdfPreviewImageGenerator _pdfPreviewImageGenerator;
 
-        public ProjectPreviewImageGenerator(IEnumerable<IPreviewImageGenerator> generators, 
-            ILogger<ProjectPreviewImageGenerator> logger) : base(logger)
+        public ProjectPreviewImageGenerator(ILogger<ProjectPreviewImageGenerator> logger,
+            ILogger<PdfPreviewImageGenerator> pdfLogger) : base(logger)
         {
-            _pdfPreviewImageGenerator = generators.FirstOrDefault(pg => pg is PdfPreviewImageGenerator)
-                as PdfPreviewImageGenerator;
+            // We have to manually create this internal instance because currently we are
+            // in the process of instantiating generators and if we tried to load it from
+            // DI it would lead to a circular reference.
+            _pdfPreviewImageGenerator = new PdfPreviewImageGenerator(pdfLogger);
             _logger = logger;
         }
 

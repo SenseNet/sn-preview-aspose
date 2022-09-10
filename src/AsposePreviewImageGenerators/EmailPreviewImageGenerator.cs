@@ -1,6 +1,4 @@
-﻿using System.Collections.Generic;
-using System.IO;
-using System.Linq;
+﻿using System.IO;
 using System.Threading;
 using System.Threading.Tasks;
 using Aspose.Email;
@@ -13,11 +11,13 @@ namespace SenseNet.Preview.Aspose.PreviewImageGenerators
         private readonly ILogger<EmailPreviewImageGenerator> _logger;
         private readonly WordPreviewImageGenerator _wordPreviewImageGenerator;
 
-        public EmailPreviewImageGenerator(IEnumerable<IPreviewImageGenerator> generators,
-            ILogger<EmailPreviewImageGenerator> logger) : base(logger)
+        public EmailPreviewImageGenerator(ILogger<EmailPreviewImageGenerator> logger,
+            ILogger<WordPreviewImageGenerator> wordLogger) : base(logger)
         {
-            _wordPreviewImageGenerator = generators.FirstOrDefault(pg => pg is WordPreviewImageGenerator) 
-                as WordPreviewImageGenerator;
+            // We have to manually create this internal instance because currently we are
+            // in the process of instantiating generators and if we tried to load it from
+            // DI it would lead to a circular reference.
+            _wordPreviewImageGenerator = new WordPreviewImageGenerator(wordLogger);
             _logger = logger;
         }
 
