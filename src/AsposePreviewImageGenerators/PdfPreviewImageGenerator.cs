@@ -44,15 +44,23 @@ namespace SenseNet.Preview.Aspose.PreviewImageGenerators
                         _logger.LogTrace($"Loading page {i} of file {context.ContentId} (pdf)");
 
                         var pngDevice = new PngDevice(new Resolution(context.PreviewResolution, context.PreviewResolution));
+
+                        _logger.LogTrace($"Processing page {i} of file {context.ContentId} (pdf)");
                         pngDevice.Process(document.Pages[i + 1], imgStream);
+
                         if (imgStream.Length == 0)
+                        {
+                            _logger.LogTrace($"Page {i} of file {context.ContentId} is empty.");
                             continue;
+                        }
 
                         await context.SavePreviewAndThumbnailAsync(imgStream, i + 1, cancellationToken)
                             .ConfigureAwait(false);
                     }
                     catch (Exception ex)
                     {
+                        _logger.LogTrace($"Exception during preview generation: {ex.Message} {Tools.SerializeException(ex)}");
+
                         if (await Tools.HandlePageErrorAsync(ex, i + 1, context, !loggedPageError,
                             cancellationToken).ConfigureAwait(false))
                             return;

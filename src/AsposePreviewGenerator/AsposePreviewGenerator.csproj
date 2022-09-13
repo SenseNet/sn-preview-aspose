@@ -3,7 +3,7 @@
   <PropertyGroup>
     <OutputType>Exe</OutputType>
     <TargetFramework>netcoreapp3.1</TargetFramework>
-    <Version>7.2.5.1</Version>
+    <Version>7.2.6.2</Version>
     <RootNamespace>SenseNet.Preview.Aspose.AsposePreviewGenerator</RootNamespace>
     <AssemblyName>AsposePreviewGenerator</AssemblyName>
     <Authors>kavics,tusmester,aniko</Authors>

@@ -60,6 +60,8 @@ namespace SenseNet.Preview.Aspose.PreviewImageGenerators
                 }
                 catch (Exception ex)
                 {
+                    _logger.LogTrace($"Exception during preview generation: {ex.Message} {Tools.SerializeException(ex)}");
+
                     if (await Tools.HandlePageErrorAsync(ex, i + 1, context, !loggedPageError,
                         cancellationToken).ConfigureAwait(false))
                         return;
