@@ -21,6 +21,8 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "AsposePreviewProvider.Insta
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "AsposePreviewGenerator.Components", "AsposePreviewGenerator.Components\AsposePreviewGenerator.Components.csproj", "{2863630D-62DE-41D0-91B6-3B5C8D3BE702}"
 EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "AsposePreviewGenerator.SNaaS", "AsposePreviewGenerator.SNaaS\AsposePreviewGenerator.SNaaS.csproj", "{DFD6AD2E-DA6B-4613-B531-0330F5D30270}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -47,6 +49,10 @@ Global
 		{2863630D-62DE-41D0-91B6-3B5C8D3BE702}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{2863630D-62DE-41D0-91B6-3B5C8D3BE702}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{2863630D-62DE-41D0-91B6-3B5C8D3BE702}.Release|Any CPU.Build.0 = Release|Any CPU
+		{DFD6AD2E-DA6B-4613-B531-0330F5D30270}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{DFD6AD2E-DA6B-4613-B531-0330F5D30270}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{DFD6AD2E-DA6B-4613-B531-0330F5D30270}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{DFD6AD2E-DA6B-4613-B531-0330F5D30270}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
