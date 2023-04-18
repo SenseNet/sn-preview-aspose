@@ -24,24 +24,24 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <PackageReference Include="IdentityModel" Version="4.2.0" />
-    <PackageReference Include="Microsoft.Extensions.Configuration.EnvironmentVariables" Version="3.1.15" />
-    <PackageReference Include="Microsoft.Extensions.Configuration.Json" Version="3.1.15" />
-    <PackageReference Include="Microsoft.Extensions.Configuration.UserSecrets" Version="3.1.15" />
-    <PackageReference Include="Microsoft.Extensions.Hosting" Version="3.1.15" />
-    <PackageReference Include="Newtonsoft.Json" Version="12.0.3" />
-    <PackageReference Include="SenseNet.Client" Version="2.0.14" />
+    <PackageReference Include="IdentityModel" Version="6.0.0" />
+    <PackageReference Include="Microsoft.Extensions.Configuration.EnvironmentVariables" Version="7.0.0" />
+    <PackageReference Include="Microsoft.Extensions.Configuration.Json" Version="7.0.0" />
+    <PackageReference Include="Microsoft.Extensions.Configuration.UserSecrets" Version="7.0.0" />
+    <PackageReference Include="Microsoft.Extensions.Hosting" Version="7.0.1" />
+    <PackageReference Include="SenseNet.Client" Version="3.0.0.1" />
     <PackageReference Include="SenseNet.Preview" Version="7.2.2" />
-    <PackageReference Include="SenseNet.TaskManagement.Core" Version="2.2.1" />
-    <PackageReference Include="SenseNet.Tools" Version="3.2.9" />
-    <PackageReference Include="Serilog.Extensions.Logging" Version="3.0.1" />
-    <PackageReference Include="Serilog.Settings.Configuration" Version="3.1.0" />
-    <PackageReference Include="Serilog.Sinks.File" Version="4.1.0" />
-    <PackageReference Include="Serilog.Sinks.Graylog" Version="2.2.2" />
-    <PackageReference Include="SkiaSharp.NativeAssets.Linux.NoDependencies" Version="2.80.2" />
+    <PackageReference Include="SenseNet.TaskManagement.Core" Version="2.2.1.2" />
+    <PackageReference Include="SenseNet.Tools" Version="3.2.11" />
+    <PackageReference Include="Serilog.Extensions.Logging" Version="3.1.0" />
+    <PackageReference Include="Serilog.Settings.Configuration" Version="3.4.0" />
+    <PackageReference Include="Serilog.Sinks.File" Version="5.0.0" />
+    <PackageReference Include="Serilog.Sinks.Graylog" Version="2.3.0" />
+    <PackageReference Include="SkiaSharp.NativeAssets.Linux.NoDependencies" Version="2.88.3" />
   </ItemGroup>
 
   <ItemGroup>
+    <ProjectReference Include="..\AsposePreviewGenerator.Components\AsposePreviewGenerator.Components.csproj" />
     <ProjectReference Include="..\AsposePreviewImageGenerators\AsposePreviewImageGenerators.csproj" />
   </ItemGroup>
 
@@ -51,9 +51,6 @@
     </None>
     <None Update="Aspose.Total.lic">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </None>
-    <None Update="empty.png">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
   </ItemGroup>
 

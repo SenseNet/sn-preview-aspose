@@ -4,7 +4,7 @@
       "commandName": "Project",
       "environmentVariables": {
         "NETCORE_ENVIRONMENT": "Development",
-        "ImageGeneration__CheckLicense":  false 
+        "SenseNet__AsposePreviewGenerator__ImageGeneration__CheckLicense": false
       }
     }
   }

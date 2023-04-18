@@ -1,34 +1,32 @@
-﻿using System;
-using System.Diagnostics;
+﻿using System.Diagnostics;
 using Microsoft.Extensions.Logging;
 using SenseNet.Client;
-using SenseNet.Diagnostics;
 using SenseNet.TaskManagement.Core;
 
 namespace SenseNet.Preview.Aspose.AsposePreviewGenerator
 {
-    internal class Logger
+    public class Logger
     {
-        internal static ILogger Instance { get; set; }
+        public static ILogger Instance { get; set; }
         private static readonly string LOG_PREFIX = "#AsposePreviewGenerator> ";
 
-        internal static void WriteTrace(string message)
+        public static void WriteTrace(string message)
         {
             WriteTrace(null, 0, 0, message);
         }
-        internal static void WriteTrace(string repository, int contentId, int page, string message)
+        public static void WriteTrace(string repository, int contentId, int page, string message)
         {
             Instance?.LogTrace($"{LOG_PREFIX} {message} Repo: {repository} Content id: {contentId}, page number: {page}");
         }
 
-        internal static void WriteInfo(int contentId, int page, string message)
+        public static void WriteInfo(int contentId, int page, string message)
         {
             var msg = $"{LOG_PREFIX} {message} Content id: {contentId}, page number: {page}";
             Trace.WriteLine(msg);
             Instance?.LogInformation(msg);
         }
 
-        internal static void WriteWarning(int contentId, int page, string message)
+        public static void WriteWarning(int contentId, int page, string message)
         {
             WriteInfo(contentId, page, message);
 
@@ -36,7 +34,7 @@ namespace SenseNet.Preview.Aspose.AsposePreviewGenerator
             Console.WriteLine("WARNING: Content id: {0}, page: {1}. {2}", contentId, page, message);
         }
 
-        internal static void WriteError(int contentId, int page = 0, string message = null, Exception ex = null, int startIndex = 0, string version = "")
+        public static void WriteError(int contentId, int page = 0, string message = null, Exception ex = null, int startIndex = 0, string version = "")
         {
             var msg = message == null
                 ? "Error during preview generation."

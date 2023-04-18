@@ -1,6 +1,5 @@
 ﻿using Microsoft.Extensions.Logging;
 using EventId = Microsoft.Extensions.Logging.EventId;
-using System;
 
 namespace SenseNet.Preview.Aspose.AsposePreviewGenerator
 {
@@ -45,8 +44,7 @@ namespace SenseNet.Preview.Aspose.AsposePreviewGenerator
             // do nothing
         }
 
-        private readonly Lazy<PreviewGeneratorLogger> _logger =
-            new Lazy<PreviewGeneratorLogger>(() => new PreviewGeneratorLogger());
+        private readonly Lazy<PreviewGeneratorLogger> _logger = new(() => new PreviewGeneratorLogger());
 
         public ILogger CreateLogger(string categoryName)
         {
