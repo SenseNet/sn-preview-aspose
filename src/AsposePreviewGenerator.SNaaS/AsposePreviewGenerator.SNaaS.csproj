@@ -1,58 +1,60 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
 
-  <PropertyGroup>
-    <OutputType>Exe</OutputType>
-    <TargetFramework>net6.0</TargetFramework>
-    <Version>7.2.7</Version>
-    <RootNamespace>SenseNet.Preview.Aspose.AsposePreviewGenerator</RootNamespace>
-    <AssemblyName>AsposePreviewGenerator</AssemblyName>
-    <Authors>kavics,tusmester</Authors>
-    <Company>Sense/Net Inc.</Company>
-    <Copyright>Copyright © Sense/Net Inc.</Copyright>
-    <PackageLicenseUrl>https://github.com/SenseNet/sn-preview/blob/master/LICENSE</PackageLicenseUrl>
-    <PackageProjectUrl>https://github.com/SenseNet/sn-preview</PackageProjectUrl>
-    <PackageIconUrl>https://raw.githubusercontent.com/SenseNet/sn-resources/master/images/sn-icon/sensenet-icon-64.png</PackageIconUrl>
-    <RepositoryUrl>https://github.com/SenseNet/sn-preview.git</RepositoryUrl>
-    <RepositoryType>git</RepositoryType>
-    <PackageTags>sensenet preview csp aspose</PackageTags>
-    <PackageReleaseNotes>See release notes on GitHub.</PackageReleaseNotes>
-    <Product>sensenet Aspose Preview Generator</Product>
-    <Description>Preview generator tool built on the Aspose libraries for generating preview images for the sensenet platform.</Description>
-    <LangVersion>latest</LangVersion>
-    <ApplicationIcon>sn.ico</ApplicationIcon>
-    <UserSecretsId>870b6f4c-77e2-4ec4-8762-ca8a59bbfbb3</UserSecretsId>
-  </PropertyGroup>
+	<PropertyGroup>
+		<OutputType>Exe</OutputType>
+		<TargetFramework>net6.0</TargetFramework>
+		<Version>7.2.7</Version>
+		<RootNamespace>SenseNet.Preview.Aspose.AsposePreviewGenerator</RootNamespace>
+		<AssemblyName>AsposePreviewGenerator</AssemblyName>
+		<Authors>kavics,tusmester</Authors>
+		<Company>Sense/Net Inc.</Company>
+		<Copyright>Copyright © Sense/Net Inc.</Copyright>
+		<PackageLicenseUrl>https://github.com/SenseNet/sn-preview/blob/master/LICENSE</PackageLicenseUrl>
+		<PackageProjectUrl>https://github.com/SenseNet/sn-preview</PackageProjectUrl>
+		<PackageIconUrl>https://raw.githubusercontent.com/SenseNet/sn-resources/master/images/sn-icon/sensenet-icon-64.png</PackageIconUrl>
+		<RepositoryUrl>https://github.com/SenseNet/sn-preview.git</RepositoryUrl>
+		<RepositoryType>git</RepositoryType>
+		<PackageTags>sensenet preview csp aspose</PackageTags>
+		<PackageReleaseNotes>See release notes on GitHub.</PackageReleaseNotes>
+		<Product>sensenet Aspose Preview Generator</Product>
+		<Description>Preview generator tool built on the Aspose libraries for generating preview images for the sensenet platform.</Description>
+		<LangVersion>latest</LangVersion>
+		<ApplicationIcon>sn.ico</ApplicationIcon>
+		<UserSecretsId>870b6f4c-77e2-4ec4-8762-ca8a59bbfbb3</UserSecretsId>
+		<DockerDefaultTargetOS>Linux</DockerDefaultTargetOS>
+	</PropertyGroup>
 
-  <ItemGroup>
-    <PackageReference Include="IdentityModel" Version="6.0.0" />
-    <PackageReference Include="Microsoft.Extensions.Configuration.EnvironmentVariables" Version="7.0.0" />
-    <PackageReference Include="Microsoft.Extensions.Configuration.Json" Version="7.0.0" />
-    <PackageReference Include="Microsoft.Extensions.Configuration.UserSecrets" Version="7.0.0" />
-    <PackageReference Include="Microsoft.Extensions.Hosting" Version="7.0.1" />
-    <PackageReference Include="SenseNet.Client" Version="3.0.0.1" />
-    <PackageReference Include="SenseNet.Preview" Version="7.2.2" />
-    <PackageReference Include="SenseNet.TaskManagement.Core" Version="2.2.1.2" />
-    <PackageReference Include="SenseNet.Tools" Version="3.2.11" />
-    <PackageReference Include="Serilog.Extensions.Logging" Version="3.1.0" />
-    <PackageReference Include="Serilog.Settings.Configuration" Version="3.4.0" />
-    <PackageReference Include="Serilog.Sinks.File" Version="5.0.0" />
-    <PackageReference Include="Serilog.Sinks.Graylog" Version="2.3.0" />
-    <PackageReference Include="SkiaSharp.NativeAssets.Linux.NoDependencies" Version="2.88.3" />
-    <PackageReference Include="SNaaS.Client" Version="0.0.8" />
-  </ItemGroup>
+	<ItemGroup>
+		<PackageReference Include="IdentityModel" Version="6.0.0" />
+		<PackageReference Include="Microsoft.Extensions.Configuration.EnvironmentVariables" Version="7.0.0" />
+		<PackageReference Include="Microsoft.Extensions.Configuration.Json" Version="7.0.0" />
+		<PackageReference Include="Microsoft.Extensions.Configuration.UserSecrets" Version="7.0.0" />
+		<PackageReference Include="Microsoft.Extensions.Hosting" Version="7.0.1" />
+		<PackageReference Include="Microsoft.VisualStudio.Azure.Containers.Tools.Targets" Version="1.17.2" />
+		<PackageReference Include="SenseNet.Client" Version="3.0.0.1" />
+		<PackageReference Include="SenseNet.Preview" Version="7.2.2" />
+		<PackageReference Include="SenseNet.TaskManagement.Core" Version="2.2.1.2" />
+		<PackageReference Include="SenseNet.Tools" Version="3.2.11" />
+		<PackageReference Include="Serilog.Extensions.Logging" Version="3.1.0" />
+		<PackageReference Include="Serilog.Settings.Configuration" Version="3.4.0" />
+		<PackageReference Include="Serilog.Sinks.File" Version="5.0.0" />
+		<PackageReference Include="Serilog.Sinks.Graylog" Version="2.3.0" />
+		<PackageReference Include="SkiaSharp.NativeAssets.Linux.NoDependencies" Version="2.88.3" />
+		<PackageReference Include="SNaaS.Client" Version="0.0.8" />
+	</ItemGroup>
 
-  <ItemGroup>
-    <ProjectReference Include="..\AsposePreviewGenerator.Components\AsposePreviewGenerator.Components.csproj" />
-    <ProjectReference Include="..\AsposePreviewImageGenerators\AsposePreviewImageGenerators.csproj" />
-  </ItemGroup>
+	<ItemGroup>
+		<ProjectReference Include="..\AsposePreviewGenerator.Components\AsposePreviewGenerator.Components.csproj" />
+		<ProjectReference Include="..\AsposePreviewImageGenerators\AsposePreviewImageGenerators.csproj" />
+	</ItemGroup>
 
-  <ItemGroup>
-    <None Update="appsettings.json">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </None>
-    <None Update="Aspose.Total.lic">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </None>
-  </ItemGroup>
+	<ItemGroup>
+		<None Update="appsettings.json">
+			<CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+		</None>
+		<None Update="Aspose.Total.lic">
+			<CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+		</None>
+	</ItemGroup>
 
 </Project>

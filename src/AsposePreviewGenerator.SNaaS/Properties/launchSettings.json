@@ -4,8 +4,11 @@
       "commandName": "Project",
       "environmentVariables": {
         "NETCORE_ENVIRONMENT": "Development",
-        "SenseNet__AsposePreviewGenerator__ImageGeneration__CheckLicense": false
+        "SenseNet__AsposePreviewGenerator__ImageGeneration__CheckLicense": "false"
       }
+    },
+    "Docker": {
+      "commandName": "Docker"
     }
   }
 }
