@@ -16,4 +16,5 @@ FROM base AS final
 RUN mkdir /app/TaskExecutors/AsposePreviewGenerator -p
 WORKDIR /app/TaskExecutors/AsposePreviewGenerator
 COPY --from=publish /app/publish .
+WORKDIR /app
 ENTRYPOINT ["dotnet", "AsposePreviewGenerator.dll"]
