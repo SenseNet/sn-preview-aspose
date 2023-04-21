@@ -1,6 +1,5 @@
-#See https://aka.ms/customizecontainer to learn how to customize your debug container and how Visual Studio uses this Dockerfile to build your images for faster debugging.
-
-FROM mcr.microsoft.com/dotnet/runtime:6.0 AS base
+ARG TASKAGENT_VERSION=latest
+FROM sensenetcsp/sn-taskagent:${TASKAGENT_VERSION} AS base
 WORKDIR /app
 
 FROM mcr.microsoft.com/dotnet/sdk:6.0 AS build
@@ -14,6 +13,7 @@ FROM build AS publish
 RUN dotnet publish "AsposePreviewGenerator.csproj" -c Release -o /app/publish
 
 FROM base AS final
-WORKDIR /app
+RUN mkdir /app/TaskExecutors/AsposePreviewGenerator -p
+WORKDIR /app/TaskExecutors/AsposePreviewGenerator
 COPY --from=publish /app/publish .
 ENTRYPOINT ["dotnet", "AsposePreviewGenerator.dll"]
