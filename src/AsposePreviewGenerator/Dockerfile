@@ -17,5 +17,4 @@ RUN mkdir /app/TaskExecutors/AsposePreviewGenerator -p
 WORKDIR /app/TaskExecutors/AsposePreviewGenerator
 COPY --from=publish /app/publish .
 WORKDIR /app
-COPY --from=base /app .
-ENTRYPOINT ["dotnet", "AsposePreviewGenerator.dll"]
+ENTRYPOINT ["dotnet", "SenseNetTaskAgent.dll"]
