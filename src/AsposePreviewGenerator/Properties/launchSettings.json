@@ -4,8 +4,11 @@
       "commandName": "Project",
       "environmentVariables": {
         "NETCORE_ENVIRONMENT": "Development",
-        "ImageGeneration__CheckLicense":  false 
+        "ImageGeneration__CheckLicense": "false"
       }
+    },
+    "Docker": {
+      "commandName": "Docker"
     }
   }
 }
