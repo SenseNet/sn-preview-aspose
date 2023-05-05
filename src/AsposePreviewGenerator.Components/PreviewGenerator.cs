@@ -108,6 +108,10 @@ namespace SenseNet.Preview.Aspose.AsposePreviewGenerator
 
             server.IsTrusted = Config.Environment.IsDevelopment;
 
+            // set api key if we got one through the command line
+            if (!string.IsNullOrEmpty(ApiKey))
+                server.Authentication.ApiKey = ApiKey;
+
             ClientContext.Current.AddServer(server);
 
             return true;
@@ -298,7 +302,7 @@ namespace SenseNet.Preview.Aspose.AsposePreviewGenerator
         {
             cancellationToken.ThrowIfCancellationRequested();
 
-            Logger.WriteTrace(SiteUrl, ContentId, 0, "Saving main preview image.");
+            Logger.WriteTrace(SiteUrl, ContentId, page, "Saving main preview image.");
 
             // save main preview image
             await SaveImageStreamAsync(imageStream, GetPreviewNameFromPageNumber(page), page, 
@@ -309,7 +313,7 @@ namespace SenseNet.Preview.Aspose.AsposePreviewGenerator
 
             cancellationToken.ThrowIfCancellationRequested();
 
-            Logger.WriteTrace(SiteUrl, ContentId, 0, "Saving thumbnail image.");
+            Logger.WriteTrace(SiteUrl, ContentId, page, "Saving thumbnail image.");
 
             // save smaller image for thumbnail
             await SaveImageStreamAsync(imageStream, GetThumbnailNameFromPageNumber(page), page, 

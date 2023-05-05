@@ -53,7 +53,7 @@ namespace AsposePreviewGenerator.Components
             var repositoryOptions = _options.Applications.FirstOrDefault(r => r.Url == appUrl);
             if (repositoryOptions == null)
             {
-                _logger.LogTrace("Warning: no repository configured for app url {appUrl}", appUrl);
+                _logger.LogTrace("No repository configured for app url {appUrl}", appUrl);
                 return server;
             }
             
@@ -76,7 +76,7 @@ namespace AsposePreviewGenerator.Components
             if (string.IsNullOrEmpty(server.Authentication.AccessToken) &&
                 string.IsNullOrEmpty(server.Authentication.ApiKey))
             {
-                _logger.LogTrace("Warning: no authentication configured for app url {appUrl}", appUrl);
+                _logger.LogTrace("No authentication configured for app url {appUrl}", appUrl);
             }
 
             return server;
