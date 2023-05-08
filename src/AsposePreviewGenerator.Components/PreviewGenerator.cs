@@ -114,6 +114,14 @@ namespace SenseNet.Preview.Aspose.AsposePreviewGenerator
 
             ClientContext.Current.AddServer(server);
 
+            var currentUser = await server.GetCurrentUserAsync(new[]
+                {
+                    "Id", "Path", "Type", "Name"
+                })
+                .ConfigureAwait(false);
+            
+            Logger.WriteTrace(SiteUrl, ContentId, 0, $"Current user: {currentUser?.Path}");
+
             return true;
         }
 
