@@ -13,6 +13,11 @@ FROM build AS publish
 RUN dotnet publish "AsposePreviewGenerator.csproj" -c Release -o /app/publish
 
 FROM base AS final
+RUN apt-get update \
+    && apt-get install -y libc6-dev \
+    && apt-get install -y libgdiplus \
+    && apt-get install -y libx11-dev \    
+    && apt-get install -y libfontconfig1
 RUN mkdir /app/TaskExecutors/AsposePreviewGenerator -p
 WORKDIR /app/TaskExecutors/AsposePreviewGenerator
 COPY --from=publish /app/publish .
