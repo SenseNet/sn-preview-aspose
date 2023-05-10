@@ -1,7 +1,6 @@
 ﻿using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 using System.Net;
-using System.Drawing;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using SenseNet.Client;
@@ -18,6 +17,7 @@ using AsposeSlides = Aspose.Slides;
 using AsposeEmail = Aspose.Email;
 using AsposeTasks = Aspose.Tasks;
 using System.Reflection;
+using Aspose.Imaging.ImageOptions;
 using Microsoft.Extensions.Options;
 
 namespace SenseNet.Preview.Aspose.AsposePreviewGenerator
@@ -161,7 +161,9 @@ namespace SenseNet.Preview.Aspose.AsposePreviewGenerator
                 contentPath = fileInfo.Path;
 
                 if (Config.ImageGeneration.CheckLicense)
-                    CheckLicense(contentPath.Substring(contentPath.LastIndexOf('/') + 1));
+                    CheckLicense(contentPath[(contentPath.LastIndexOf('/') + 1)..]);
+                else
+                    Logger.WriteTrace(SiteUrl, ContentId, 0, "License check is disabled.");
             }
             catch (Exception ex)
             {
@@ -335,17 +337,18 @@ namespace SenseNet.Preview.Aspose.AsposePreviewGenerator
             int previewsFolderId, CancellationToken cancellationToken)
         {
             imageStream.Seek(0, SeekOrigin.Begin);
-            using var original = Image.FromStream(imageStream);
 
-            width = Math.Min(width, original.Width);
-            height = Math.Min(height, original.Height);
+            var asposeImage = AsposeImaging.Image.Load(imageStream);
 
-            using var resized = ResizeImage(original, width, height);
+            width = Math.Min(width, asposeImage.Width);
+            height = Math.Min(height, asposeImage.Height);
+
+            using var resized = ResizeImage(asposeImage, width, height);
             if (resized == null)
                 return;
 
             await using var memStream = new MemoryStream();
-            resized.Save(memStream, Common.PREVIEWIMAGEFORMAT);
+            resized.Save(memStream, new PngOptions());
 
             await SaveImageStreamAsync(memStream, name, page, previewsFolderId, cancellationToken);
         }
@@ -387,17 +390,13 @@ namespace SenseNet.Preview.Aspose.AsposePreviewGenerator
             Logger.WriteTrace($"Saving empty image for page {page} of document {ContentId} in repository {SiteUrl}");
 
             var myAssembly = Assembly.GetExecutingAssembly();
-            await using var myStream =
+            await using var emptyImageStream =
                 myAssembly.GetManifestResourceStream("AsposePreviewGenerator.Components.empty.png");
-
-            var emptyImage = new Bitmap(myStream);
-
-            await SaveImageAsync(emptyImage, page, previewsFolderId, cancellationToken);
+            
+            await SaveImageAsync(emptyImageStream, page, previewsFolderId, cancellationToken);
         }
-        public static Task SaveImageAsync(Image image, int page, int previewsFolderId, CancellationToken cancellationToken)
+        public static Task SaveImageAsync(Stream imgStream, int page, int previewsFolderId, CancellationToken cancellationToken)
         {
-            using var imgStream = new MemoryStream();
-            image.Save(imgStream, Common.PREVIEWIMAGEFORMAT);
             return SavePreviewAndThumbnailAsync(imgStream, page, previewsFolderId, cancellationToken);
         }
 
@@ -473,7 +472,7 @@ namespace SenseNet.Preview.Aspose.AsposePreviewGenerator
             return string.Format(Common.THUMBNAIL_IMAGENAME, page);
         }
 
-        private static Image ResizeImage(Image image, int maxWidth, int maxHeight)
+        private static AsposeImaging.Image ResizeImage(AsposeImaging.Image image, int maxWidth, int maxHeight)
         {
             if (image == null)
                 return null;
@@ -484,27 +483,20 @@ namespace SenseNet.Preview.Aspose.AsposePreviewGenerator
 
             ComputeResizedDimensions(image.Width, image.Height, maxWidth, maxHeight, out var newWidth, out var newHeight);
 
-            Logger.WriteTrace(SiteUrl, ContentId, 0, "Resizing image.");
-
+            Logger.WriteTrace(SiteUrl, ContentId, 0, $"Resizing image to {newWidth} x {newHeight}.");
+            
             try
             {
-                var newImage = new Bitmap(newWidth, newHeight);
-                newImage.SetResolution(Config.ImageGeneration.PreviewResolution, 
-                    Config.ImageGeneration.PreviewResolution);
-
-                using (var graphicsHandle = Graphics.FromImage(newImage))
-                {
-                    graphicsHandle.InterpolationMode = System.Drawing.Drawing2D.InterpolationMode.HighQualityBicubic;
-                    graphicsHandle.DrawImage(image, 0, 0, newWidth, newHeight);
-                }
-
-                return newImage;
+                //TODO: set resolution?
+                image.Resize(newWidth, newHeight);
             }
             catch (OutOfMemoryException ex)
             {
                 Logger.WriteError(ContentId, message: "Out of memory error during image resizing.", ex: ex, startIndex: StartIndex, version: Version);
                 return null;
             }
+
+            return image;
         }
         private static void ComputeResizedDimensions(int originalWidth, int originalHeight, int maxWidth, int maxHeight, out int newWidth, out int newHeight)
         {
@@ -629,34 +621,65 @@ namespace SenseNet.Preview.Aspose.AsposePreviewGenerator
         {
             Logger.WriteTrace(SiteUrl, ContentId, 0, "Checking Aspose license.");
 
-            var extension = fileName.Substring(fileName.LastIndexOf('.')).ToLower();
+            var extension = fileName[fileName.LastIndexOf('.')..].ToLower();
 
             try
             {
+                string licenseClass = null;
+
+                // imaging is always required
+                new AsposeImaging.License().SetLicense(Constants.LicensePath);
+
                 if (Common.WORD_EXTENSIONS.Contains(extension))
+                {
                     new AsposeWords.License().SetLicense(Constants.LicensePath);
+                    licenseClass = "AsposeWords";
+                }
                 else if (Common.IMAGE_EXTENSIONS.Contains(extension) || Common.TIFF_EXTENSIONS.Contains(extension))
-                    new AsposeImaging.License().SetLicense(Constants.LicensePath);
+                {
+                    // imaging is already checked above
+                    licenseClass = "AsposeImaging";
+                }
                 else if (Common.DIAGRAM_EXTENSIONS.Contains(extension))
+                {
                     new AsposeDiagram.License().SetLicense(Constants.LicensePath);
+                    licenseClass = "AsposeDiagram";
+                }
                 else if (Common.WORKBOOK_EXTENSIONS.Contains(extension))
+                {
                     new AsposeCells.License().SetLicense(Constants.LicensePath);
+                    licenseClass = "AsposeCells";
+                }
                 else if (Common.PDF_EXTENSIONS.Contains(extension))
+                {
                     new AsposePdf.License().SetLicense(Constants.LicensePath);
-                else if (Common.PRESENTATION_EXTENSIONS.Contains(extension) || Common.PRESENTATIONEX_EXTENSIONS.Contains(extension))
+                    licenseClass = "AsposePdf";
+                }
+                else if (Common.PRESENTATION_EXTENSIONS.Contains(extension) ||
+                         Common.PRESENTATIONEX_EXTENSIONS.Contains(extension))
+                {
                     new AsposeSlides.License().SetLicense(Constants.LicensePath);
+                    licenseClass = "AsposeSlides";
+                }
                 else if (Common.EMAIL_EXTENSIONS.Contains(extension))
                 {
                     // we use Aspose.Word for generating preview images from msg files
                     new AsposeEmail.License().SetLicense(Constants.LicensePath);
                     new AsposeWords.License().SetLicense(Constants.LicensePath);
+                    licenseClass = "AsposeEmail";
                 }
                 else if (Common.PROJECT_EXTENSIONS.Contains(extension))
                 {
                     // we use Aspose.Pdf for generating preview images from mpp files
                     new AsposeTasks.License().SetLicense(Constants.LicensePath);
                     new AsposePdf.License().SetLicense(Constants.LicensePath);
+                    licenseClass = "AsposeTasks";
                 }
+
+                Logger.WriteTrace(SiteUrl, ContentId, 0,
+                    string.IsNullOrEmpty(licenseClass)
+                        ? "WARNING: unknown license class."
+                        : $"License check SUCCESSFUL [{licenseClass}].");
             }
             catch (Exception ex)
             {

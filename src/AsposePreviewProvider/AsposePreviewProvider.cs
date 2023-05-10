@@ -1,12 +1,14 @@
-﻿using System;
+﻿extern alias AsposeSlides;
+using System;
 using System.Collections.Generic;
+using System.Drawing.Imaging;
 using System.IO;
 using System.Linq;
 using AsposeCells = Aspose.Cells;
 using AsposeDiagram = Aspose.Diagram;
 using AsposeImaging = Aspose.Imaging;
 using AsposePdf = Aspose.Pdf;
-using AsposeSlides = Aspose.Slides;
+using Slides = AsposeSlides::Aspose.Slides;
 using AsposeEmail = Aspose.Email;
 using AsposeTasks = Aspose.Tasks;
 using AsposeWords = Aspose.Words;
@@ -303,20 +305,18 @@ namespace SenseNet.Preview.Aspose
 
                         if (imageForDocument != null)
                         {
-                            using (var imageStream = new MemoryStream())
-                            {
-                                imageForDocument.Save(imageStream, Common.PREVIEWIMAGEFORMAT);
+                            using var imageStream = new MemoryStream();
+                            imageForDocument.Save(imageStream, ImageFormat.Png);
 
-                                try
-                                {
-                                    var ws = index == 1 ? document.Worksheets[0] : document.Worksheets.Add("Sheet" + index);
-                                    ws.Pictures.Add(0, 0, imageStream);
-                                }
-                                catch (IndexOutOfRangeException ex)
-                                {
-                                    SnLog.WriteException(ex, "Error during document generation. Path: " + previewImage.Path);
-                                    break;
-                                }
+                            try
+                            {
+                                var ws = index == 1 ? document.Worksheets[0] : document.Worksheets.Add("Sheet" + index);
+                                ws.Pictures.Add(0, 0, imageStream);
+                            }
+                            catch (IndexOutOfRangeException ex)
+                            {
+                                SnLog.WriteException(ex, "Error during document generation. Path: " + previewImage.Path);
+                                break;
                             }
                         }
                     }
@@ -346,8 +346,8 @@ namespace SenseNet.Preview.Aspose
                 var ms = new MemoryStream();
                 var extension = ContentNamingProvider.GetFileExtension(content.Name).ToLower();
                 var oldPpt = Common.PRESENTATION_EXTENSIONS.Contains(extension);
-                var saveFormat = oldPpt ? AsposeSlides.Export.SaveFormat.Ppt : AsposeSlides.Export.SaveFormat.Pptx;
-                var docPresentation = new AsposeSlides.Presentation();
+                var saveFormat = oldPpt ? Slides.Export.SaveFormat.Ppt : Slides.Export.SaveFormat.Pptx;
+                var docPresentation = new Slides.Presentation();
                 var index = 1;
                 var imageOptions = new PreviewImageOptions() { RestrictionType = restrictionType };
 
@@ -362,7 +362,16 @@ namespace SenseNet.Preview.Aspose
                         {
                             try
                             {
+
+#if NET6_0_OR_GREATER
+                                using var asposeStream = new MemoryStream();
+                                imageForDocument.Save(asposeStream, ImageFormat.Png);
+                                asposeStream.Seek(0, SeekOrigin.Begin);
+                                var asposeImage = AsposeSlides::System.Drawing.Image.FromStream(asposeStream);
+                                var img = docPresentation.Images.AddImage(asposeImage);
+#else
                                 var img = docPresentation.Images.AddImage(imageForDocument);
+#endif
                                 var slide = docPresentation.Slides[0];
                                 if (index > 1)
                                 {
@@ -370,7 +379,7 @@ namespace SenseNet.Preview.Aspose
                                     slide = docPresentation.Slides[index - 1];
                                 }
 
-                                slide.Shapes.AddPictureFrame(AsposeSlides.ShapeType.Rectangle, 10, 10,
+                                slide.Shapes.AddPictureFrame(Slides.ShapeType.Rectangle, 10, 10,
                                                              imageForDocument.Width, imageForDocument.Height,
                                                              img);
                             }
@@ -432,7 +441,7 @@ namespace SenseNet.Preview.Aspose
                         new AsposePdf.License().SetLicense(Constants.LicensePath);
                         break;
                     case LicenseProvider.Slides:
-                        new AsposeSlides.License().SetLicense(Constants.LicensePath);
+                        new Slides.License().SetLicense(Constants.LicensePath);
                         break;
                     case LicenseProvider.Words:
                         new AsposeWords.License().SetLicense(Constants.LicensePath);

@@ -1,6 +1,4 @@
-﻿using System.Drawing;
-
-namespace SenseNet.Preview.Aspose.AsposePreviewGenerator
+﻿namespace SenseNet.Preview.Aspose.AsposePreviewGenerator
 {
     public class PreviewGenerationContext : IPreviewGenerationContext
     {
@@ -37,9 +35,9 @@ namespace SenseNet.Preview.Aspose.AsposePreviewGenerator
         {
             return PreviewGenerator.SaveEmptyPreviewAsync(page, PreviewsFolderId, cancellationToken);
         }
-        public Task SaveImageAsync(Bitmap image, int page, CancellationToken cancellationToken)
+        public Task SaveImageAsync(Stream imgStream, int page, CancellationToken cancellationToken)
         {
-            return PreviewGenerator.SaveImageAsync(image, page, PreviewsFolderId, cancellationToken);
+            return PreviewGenerator.SaveImageAsync(imgStream, page, PreviewsFolderId, cancellationToken);
         }
 
         public void LogInfo(int page, string message)

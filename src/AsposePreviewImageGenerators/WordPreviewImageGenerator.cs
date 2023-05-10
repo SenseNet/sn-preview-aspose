@@ -26,7 +26,7 @@ namespace SenseNet.Preview.Aspose.PreviewImageGenerators
 
             var document = new Document(docStream);
             var pc = document.PageCount;
-
+            
             // save the document only if this is the first round
             if (context.StartIndex == 0 || pc < 1)
                 await context.SetPageCountAsync(pc, cancellationToken).ConfigureAwait(false);
@@ -49,24 +49,22 @@ namespace SenseNet.Preview.Aspose.PreviewImageGenerators
                 {
                     _logger.LogTrace($"Loading page {i} of file {context.ContentId} (word document)");
 
-                    using (var imgStream = new MemoryStream())
+                    using var imgStream = new MemoryStream();
+                    var options = new ImageSaveOptions(SaveFormat.Png)
                     {
-                        var options = new ImageSaveOptions(SaveFormat.Png)
-                        {
-                            PageIndex = i,
-                            Resolution = context.PreviewResolution
-                        };
+                        PageSet = new PageSet(i),
+                        Resolution = context.PreviewResolution
+                    };
 
-                        document.Save(imgStream, options);
-                        if (imgStream.Length == 0)
-                        {
-                            _logger.LogTrace($"Page {i} of file {context.ContentId} is empty.");
-                            continue;
-                        }
-
-                        await context.SavePreviewAndThumbnailAsync(imgStream, i + 1, cancellationToken)
-                            .ConfigureAwait(false);
+                    document.Save(imgStream, options);
+                    if (imgStream.Length == 0)
+                    {
+                        _logger.LogTrace($"Page {i} of file {context.ContentId} is empty.");
+                        continue;
                     }
+
+                    await context.SavePreviewAndThumbnailAsync(imgStream, i + 1, cancellationToken)
+                        .ConfigureAwait(false);
                 }
                 catch (Exception ex)
                 {
