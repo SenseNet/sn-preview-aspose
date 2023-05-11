@@ -47,6 +47,8 @@ namespace SenseNet.Preview.Aspose.AsposePreviewGenerator
 
         public static async Task ExecuteAsync(string[] args, IServiceProvider services)
         {
+            Logger.Instance = services.GetRequiredService<ILogger<PreviewGenerator>>();
+
             if (!ParseParameters(args))
             {
                 Logger.WriteError(ContentId, 0,
@@ -54,6 +56,12 @@ namespace SenseNet.Preview.Aspose.AsposePreviewGenerator
                 return;
             }
 
+            var passwordLog = string.IsNullOrEmpty(Password) ? "null" : "[hidden]";
+            var apiKeyLog = string.IsNullOrEmpty(ApiKey) ? "null" : $"[{ApiKey[..3]}...]";
+
+            Logger.WriteTrace(SiteUrl, ContentId, 0, $"Parameters: Username: {Username}, " +
+                                                     $"Password: {passwordLog} ApiKey: {apiKeyLog} " +
+                                                     $"Version: {Version} StartIndex: {StartIndex}");
             try
             {
                 if (!await InitializeAsync(services))
@@ -87,8 +95,6 @@ namespace SenseNet.Preview.Aspose.AsposePreviewGenerator
 
         public static async Task<bool> InitializeAsync(IServiceProvider services)
         {
-            Logger.Instance = services.GetRequiredService<ILogger<PreviewGenerator>>();
-
             var config = services.GetRequiredService<IOptions<AsposePreviewGeneratorOptions>>().Value;
             AsposePreviewGeneratorOptions.Initialize(config);
 
@@ -110,7 +116,10 @@ namespace SenseNet.Preview.Aspose.AsposePreviewGenerator
 
             // set api key if we got one through the command line
             if (!string.IsNullOrEmpty(ApiKey))
+            {
+                Logger.WriteTrace(SiteUrl, ContentId, 0, "Setting API key");
                 server.Authentication.ApiKey = ApiKey;
+            }
 
             ClientContext.Current.AddServer(server);
 
