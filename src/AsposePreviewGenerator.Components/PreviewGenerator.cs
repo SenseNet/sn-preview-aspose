@@ -56,6 +56,8 @@ namespace SenseNet.Preview.Aspose.AsposePreviewGenerator
                 return;
             }
 
+            Logger.WriteTrace("EnableUnixSupport is switched ON because of legacy APIs.");
+
             var passwordLog = string.IsNullOrEmpty(Password) ? "null" : "[hidden]";
             var apiKeyLog = string.IsNullOrEmpty(ApiKey) ? "null" : $"[{ApiKey[..3]}...]";
 
