@@ -17,8 +17,8 @@ using AsposeSlides = Aspose.Slides;
 using AsposeEmail = Aspose.Email;
 using AsposeTasks = Aspose.Tasks;
 using System.Reflection;
-using Aspose.Imaging.ImageOptions;
 using Microsoft.Extensions.Options;
+using SkiaSharp;
 
 namespace SenseNet.Preview.Aspose.AsposePreviewGenerator
 {
@@ -344,24 +344,33 @@ namespace SenseNet.Preview.Aspose.AsposePreviewGenerator
             _generatingPreviewSubtask.Progress(progress, 100, progress + 10, 110);
         }
 
-        private static async Task SaveImageStreamAsync(Stream imageStream, string name, int page, int width, int height, 
+        private static async Task SaveImageStreamAsync(Stream? imageStream, string name, int page, int width, int height, 
             int previewsFolderId, CancellationToken cancellationToken)
         {
-            imageStream.Seek(0, SeekOrigin.Begin);
-
-            var asposeImage = AsposeImaging.Image.Load(imageStream);
-
-            width = Math.Min(width, asposeImage.Width);
-            height = Math.Min(height, asposeImage.Height);
-
-            using var resized = ResizeImage(asposeImage, width, height);
-            if (resized == null)
+            if (imageStream == null)
                 return;
 
-            await using var memStream = new MemoryStream();
-            resized.Save(memStream, new PngOptions());
+            imageStream.Seek(0, SeekOrigin.Begin);
 
-            await SaveImageStreamAsync(memStream, name, page, previewsFolderId, cancellationToken);
+            // create an in-memory copy of the stream to avoid disposing the original stream
+            await using var memoryStream = new MemoryStream();
+            await imageStream.CopyToAsync(memoryStream, 81920, cancellationToken).ConfigureAwait(false);
+            memoryStream.Seek(0, SeekOrigin.Begin);
+
+            using var sourceBitmap = SKBitmap.Decode(memoryStream);
+            using var image = ResizeImage(sourceBitmap, width, height);
+
+            if (image == null)
+            {
+                Logger.WriteTrace(SiteUrl, ContentId, page, "Resized image is null, aborting save operation.");
+                return;
+            }
+
+            Logger.WriteTrace(SiteUrl, ContentId, page, "Encoding resized image....");
+            var encodedImageData = image.Encode();
+            await using var convertedMemStream = encodedImageData.AsStream();
+            
+            await SaveImageStreamAsync(convertedMemStream, name, page, previewsFolderId, cancellationToken);
         }
         private static async Task SaveImageStreamAsync(Stream imageStream, string previewName, int page, int previewsFolderId,
             CancellationToken cancellationToken)
@@ -375,6 +384,8 @@ namespace SenseNet.Preview.Aspose.AsposePreviewGenerator
                 var imageId = await UploadImageAsync(imageStream, previewsFolderId, previewName, cancellationToken);
 
                 cancellationToken.ThrowIfCancellationRequested();
+
+                Logger.WriteTrace(SiteUrl, ContentId, page, "Setting initial preview properties...");
 
                 // set initial preview image properties (CreatedBy, Index, etc.)
                 await PostAsync(imageId, "SetInitialPreviewProperties");
@@ -482,33 +493,49 @@ namespace SenseNet.Preview.Aspose.AsposePreviewGenerator
         {
             return string.Format(Common.THUMBNAIL_IMAGENAME, page);
         }
-
-        private static AsposeImaging.Image ResizeImage(AsposeImaging.Image image, int maxWidth, int maxHeight)
+        
+        private static SKImage? ResizeImage(SKBitmap? sourceBitmap, int maxWidth, int maxHeight)
         {
-            if (image == null)
+            if (sourceBitmap == null)
                 return null;
 
-            // do not scale up the image
-            if (image.Width <= maxWidth && image.Height <= maxHeight)
-                return image;
+            SKImage image;
 
-            ComputeResizedDimensions(image.Width, image.Height, maxWidth, maxHeight, out var newWidth, out var newHeight);
+            maxWidth = Math.Min(maxWidth, sourceBitmap.Width);
+            maxHeight = Math.Min(maxHeight, sourceBitmap.Height);
 
-            Logger.WriteTrace(SiteUrl, ContentId, 0, $"Resizing image to {newWidth} x {newHeight}.");
-            
-            try
+            // do not scale up the image: resize only if it is larger than the target size
+            if (sourceBitmap.Width > maxWidth || sourceBitmap.Height > maxHeight)
             {
-                //TODO: set resolution?
-                image.Resize(newWidth, newHeight);
+                ComputeResizedDimensions(sourceBitmap.Width, sourceBitmap.Height, maxWidth, maxHeight, 
+                    out var newWidth, out var newHeight);
+
+                Logger.WriteTrace(SiteUrl, ContentId, 0, "Resizing image " +
+                                                         $"from {sourceBitmap.Width} x {sourceBitmap.Height} " +
+                                                         $"to {newWidth} x {newHeight}.");
+
+                try
+                {
+                    using var scaledBitmap = sourceBitmap.Resize(new SKImageInfo(newWidth, newHeight), SKFilterQuality.Medium);
+
+                    image = SKImage.FromBitmap(scaledBitmap);
+                }
+                catch (OutOfMemoryException ex)
+                {
+                    Logger.WriteError(ContentId, message: "Out of memory error during image resizing.", 
+                        ex: ex, startIndex: StartIndex, version: Version);
+
+                    return null;
+                }
             }
-            catch (OutOfMemoryException ex)
+            else
             {
-                Logger.WriteError(ContentId, message: "Out of memory error during image resizing.", ex: ex, startIndex: StartIndex, version: Version);
-                return null;
+                image = SKImage.FromBitmap(sourceBitmap);
             }
 
             return image;
         }
+
         private static void ComputeResizedDimensions(int originalWidth, int originalHeight, int maxWidth, int maxHeight, out int newWidth, out int newHeight)
         {
             // do not scale up the image
