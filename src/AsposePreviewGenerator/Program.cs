@@ -14,6 +14,11 @@ namespace SenseNet.Preview.Aspose.AsposePreviewGenerator
     {
         private static async Task Main(string[] args)
         {
+            // This is a workaround for the Aspose libraries using the
+            // System.Drawing.Common library, which is not supported on Linux.
+            //TODO: remove this line when the issue is fixed in Aspose
+            AppContext.SetSwitch("System.Drawing.EnableUnixSupport", true);
+
             var host = CreateHostBuilder(args).Build();
 
             await PreviewGenerator.ExecuteAsync(args, host.Services).ConfigureAwait(false);
