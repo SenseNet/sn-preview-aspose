@@ -1,5 +1,4 @@
 ﻿using System;
-using System.Drawing.Imaging;
 using System.IO;
 using System.Linq;
 using System.Threading;
@@ -118,13 +117,13 @@ namespace SenseNet.Preview.Aspose.PreviewImageGenerators
 
         private static ImageType GetImageType()
         {
-            if (Common.PREVIEWIMAGEFORMAT.Equals(ImageFormat.Png))
+            if (Common.PREVIEWIMAGEFORMAT.Equals("png", StringComparison.InvariantCultureIgnoreCase))
                 return ImageType.Png;
-            if (Common.PREVIEWIMAGEFORMAT.Equals(ImageFormat.Jpeg))
+            if (Common.PREVIEWIMAGEFORMAT.Equals("jpeg", StringComparison.InvariantCultureIgnoreCase))
                 return ImageType.Jpeg;
-            if (Common.PREVIEWIMAGEFORMAT.Equals(ImageFormat.Bmp))
+            if (Common.PREVIEWIMAGEFORMAT.Equals("bmp", StringComparison.InvariantCultureIgnoreCase))
                 return ImageType.Bmp;
-            if (Common.PREVIEWIMAGEFORMAT.Equals(ImageFormat.Gif))
+            if (Common.PREVIEWIMAGEFORMAT.Equals("gif", StringComparison.InvariantCultureIgnoreCase))
                 return ImageType.Gif;
 
             return ImageType.Png;
