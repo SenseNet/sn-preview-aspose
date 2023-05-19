@@ -1,5 +1,6 @@
+ARG TASKAGENT_IMAGE=sensenetcsp/sn-taskagent
 ARG TASKAGENT_VERSION=latest
-FROM sensenetcsp/sn-taskagent:${TASKAGENT_VERSION} AS base
+FROM ${TASKAGENT_IMAGE}:${TASKAGENT_VERSION} AS base
 WORKDIR /app
 
 FROM mcr.microsoft.com/dotnet/sdk:6.0 AS build
