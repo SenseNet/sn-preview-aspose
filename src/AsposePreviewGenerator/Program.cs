@@ -7,6 +7,7 @@ using SenseNet.Extensions.DependencyInjection;
 using Serilog;
 using Microsoft.Extensions.Configuration;
 using SenseNet.TaskManagement.Core;
+using Microsoft.Extensions.Logging;
 
 namespace SenseNet.Preview.Aspose.AsposePreviewGenerator
 {
@@ -20,6 +21,9 @@ namespace SenseNet.Preview.Aspose.AsposePreviewGenerator
             AppContext.SetSwitch("System.Drawing.EnableUnixSupport", true);
 
             var host = CreateHostBuilder(args).Build();
+
+            var logger = host.Services.GetRequiredService<ILogger<Program>>();
+            logger.LogTrace("Starting AsposePreviewGenerator");
 
             await PreviewGenerator.ExecuteAsync(args, host.Services).ConfigureAwait(false);
         }
