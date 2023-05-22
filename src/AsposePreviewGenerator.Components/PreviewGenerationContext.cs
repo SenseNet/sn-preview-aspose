@@ -1,10 +1,4 @@
-﻿using System;
-using System.Drawing;
-using System.IO;
-using System.Threading;
-using System.Threading.Tasks;
-
-namespace SenseNet.Preview.Aspose.AsposePreviewGenerator
+﻿namespace SenseNet.Preview.Aspose.AsposePreviewGenerator
 {
     public class PreviewGenerationContext : IPreviewGenerationContext
     {
@@ -27,23 +21,23 @@ namespace SenseNet.Preview.Aspose.AsposePreviewGenerator
 
         public Task SetPageCountAsync(int pageCount, CancellationToken cancellationToken)
         {
-            return Program.SetPageCountAsync(pageCount);
+            return PreviewGenerator.SetPageCountAsync(pageCount);
         }
         public void SetIndexes(int pageCount, out int firstIndex, out int lastIndex)
         {
-            Program.SetIndexes(StartIndex, pageCount, out firstIndex, out lastIndex, MaxPreviewCount);
+            PreviewGenerator.SetIndexes(StartIndex, pageCount, out firstIndex, out lastIndex, MaxPreviewCount);
         }
         public Task SavePreviewAndThumbnailAsync(Stream imgStream, int page, CancellationToken cancellationToken)
         {
-            return Program.SavePreviewAndThumbnailAsync(imgStream, page, PreviewsFolderId, cancellationToken);
+            return PreviewGenerator.SavePreviewAndThumbnailAsync(imgStream, page, PreviewsFolderId, cancellationToken);
         }
         public Task SaveEmptyPreviewAsync(int page, CancellationToken cancellationToken)
         {
-            return Program.SaveEmptyPreviewAsync(page, PreviewsFolderId, cancellationToken);
+            return PreviewGenerator.SaveEmptyPreviewAsync(page, PreviewsFolderId, cancellationToken);
         }
-        public Task SaveImageAsync(Bitmap image, int page, CancellationToken cancellationToken)
+        public Task SaveImageAsync(Stream imgStream, int page, CancellationToken cancellationToken)
         {
-            return Program.SaveImageAsync(image, page, PreviewsFolderId, cancellationToken);
+            return PreviewGenerator.SaveImageAsync(imgStream, page, PreviewsFolderId, cancellationToken);
         }
 
         public void LogInfo(int page, string message)

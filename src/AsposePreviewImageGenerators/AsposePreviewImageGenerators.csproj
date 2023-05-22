@@ -19,20 +19,23 @@
     <GeneratePackageOnBuild>true</GeneratePackageOnBuild>
     <Product>sensenet Aspose Preview image generators</Product>
     <Description>Aspose Preview image generator classes for the sensenet platform.</Description>
+	  <LangVersion>latest</LangVersion>
   </PropertyGroup>
 
   <ItemGroup>
-    <PackageReference Include="Aspose.Cells" Version="20.4.0" />
-    <PackageReference Include="Aspose.Diagram" Version="20.4.0" />
-    <PackageReference Include="Aspose.Email" Version="20.3.0" />
-    <PackageReference Include="Aspose.Imaging" Version="20.4.0" />
-    <PackageReference Include="Aspose.PDF" Version="20.4.0" />
-    <PackageReference Include="Aspose.Slides.NET" Version="20.4.0" />
-    <PackageReference Include="Aspose.Tasks" Version="20.4.0" />
-    <PackageReference Include="Aspose.Words" Version="20.4.0" />
-    <PackageReference Include="SenseNet.Client" Version="2.0.14" />
-    <PackageReference Include="SenseNet.Preview" Version="7.2.2" />
-    <PackageReference Include="SenseNet.Tools" Version="3.2.9" />
+    <PackageReference Include="Aspose.Cells" Version="23.5.0" />
+    <PackageReference Include="Aspose.Diagram" Version="23.4.0" />
+    <PackageReference Include="Aspose.Email" Version="23.4.0" />
+    <PackageReference Include="Aspose.Imaging" Version="23.4.0" />
+    <PackageReference Include="Aspose.PDF.Drawing" Version="23.4.0" />
+    <PackageReference Include="Aspose.Slides.NET" Version="23.4.0">
+      <Aliases>AsposeSlides</Aliases>
+    </PackageReference>
+    <PackageReference Include="Aspose.Tasks" Version="23.4.0" />
+    <PackageReference Include="Aspose.Words" Version="23.5.0" />
+    <PackageReference Include="SenseNet.Client" Version="3.0.0.1" />
+    <PackageReference Include="SenseNet.Preview" Version="7.2.2.1" />
+    <PackageReference Include="SenseNet.Tools" Version="3.2.11" />
   </ItemGroup>
 
 </Project>

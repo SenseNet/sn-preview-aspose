@@ -1,0 +1,34 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <TargetFramework>net6.0</TargetFramework>
+    <ImplicitUsings>enable</ImplicitUsings>
+    <Nullable>enable</Nullable>
+	  <LangVersion>latest</LangVersion>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <None Remove="empty.png" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <EmbeddedResource Include="empty.png">
+      <CopyToOutputDirectory>Never</CopyToOutputDirectory>
+    </EmbeddedResource>
+  </ItemGroup>
+
+	<ItemGroup>
+		<PackageReference Include="Microsoft.Extensions.Configuration" Version="7.0.0" />
+		<PackageReference Include="Microsoft.Extensions.Configuration.Binder" Version="7.0.4" />
+		<PackageReference Include="SenseNet.Client" Version="3.0.0.1" />
+		<PackageReference Include="SenseNet.Preview" Version="7.2.2.1" />
+		<PackageReference Include="SenseNet.TaskManagement.Core" Version="2.2.1.2" />
+		<PackageReference Include="SenseNet.Tools" Version="3.2.11" />
+		<PackageReference Include="SkiaSharp.NativeAssets.Linux.NoDependencies" Version="2.88.3" />
+	</ItemGroup>
+
+	<ItemGroup>
+		<ProjectReference Include="..\AsposePreviewImageGenerators\AsposePreviewImageGenerators.csproj" />
+	</ItemGroup>
+
+</Project>

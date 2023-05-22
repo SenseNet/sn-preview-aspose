@@ -37,7 +37,7 @@ namespace SenseNet.Preview.Aspose.PreviewImageGenerators
                 _logger.LogTrace($"Saving project document as pdf (id {context.ContentId}).");
 
                 // save project file in memory as a pdf document
-                document.Save(pdfStream, SaveFileFormat.PDF);
+                document.Save(pdfStream, SaveFileFormat.Pdf);
 
                 // generate previews from the pdf document
                 await _pdfPreviewImageGenerator.GeneratePreviewAsync(pdfStream, context, cancellationToken)

@@ -1,9 +1,10 @@
-﻿using System;
+﻿extern alias AsposeSlides;
+using System;
 using System.Drawing;
 using System.IO;
 using System.Threading;
 using System.Threading.Tasks;
-using Aspose.Slides;
+using AsposeSlides::Aspose.Slides;
 using Microsoft.Extensions.Logging;
 
 namespace SenseNet.Preview.Aspose.PreviewImageGenerators
@@ -53,10 +54,16 @@ namespace SenseNet.Preview.Aspose.PreviewImageGenerators
                     var slide = pres.Slides[i];
 
                     // generate image
-                    using (var image = slide.GetThumbnail(size))
-                    {
-                        await context.SaveImageAsync(image, i + 1, cancellationToken).ConfigureAwait(false);
-                    }
+                    using var image = slide.GetThumbnail(size);
+                    using var memStream = new MemoryStream();
+
+#if NET6_0_OR_GREATER
+                    image.Save(memStream, AsposeSlides::System.Drawing.Imaging.ImageFormat.Png);
+#else
+                    image.Save(memStream, System.Drawing.Imaging.ImageFormat.Png);
+#endif
+
+                    await context.SaveImageAsync(memStream, i + 1, cancellationToken).ConfigureAwait(false);
                 }
                 catch (Exception ex)
                 {
