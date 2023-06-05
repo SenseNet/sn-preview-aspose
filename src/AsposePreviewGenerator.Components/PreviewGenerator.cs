@@ -49,6 +49,8 @@ namespace SenseNet.Preview.Aspose.AsposePreviewGenerator
         {
             Logger.Instance = services.GetRequiredService<ILogger<PreviewGenerator>>();
 
+            Logger.WriteTrace("Preview generator version: " + typeof(PreviewGenerator).Assembly.GetName().Version);
+
             if (!ParseParameters(args))
             {
                 Logger.WriteError(ContentId, 0,
