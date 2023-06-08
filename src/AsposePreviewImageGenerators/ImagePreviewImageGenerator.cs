@@ -3,9 +3,8 @@ using System.IO;
 using System.Net;
 using System.Threading;
 using System.Threading.Tasks;
-using Aspose.Imaging;
-using Aspose.Imaging.ImageOptions;
 using Microsoft.Extensions.Logging;
+using SkiaSharp;
 using SeekOrigin = System.IO.SeekOrigin;
 
 namespace SenseNet.Preview.Aspose.PreviewImageGenerators
@@ -28,31 +27,32 @@ namespace SenseNet.Preview.Aspose.PreviewImageGenerators
 
             _logger.LogTrace($"Loading image from stream (id {context.ContentId}).");
 
-            var document = Image.Load(docStream);
+            using var sourceBitmap = SKBitmap.Decode(docStream);
 
             if (context.StartIndex == 0)
                 await context.SetPageCountAsync(1, cancellationToken).ConfigureAwait(false);
 
-            using (var imgStream = new MemoryStream())
+            using var imgStream = new MemoryStream();
+            var result = sourceBitmap.Encode(imgStream, SKEncodedImageFormat.Png, 100);
+
+            _logger.LogTrace(result
+                ? $"Image conversion succeeded (id {context.ContentId})."
+                : $"Image conversion FAILED (id {context.ContentId}).");
+            
+            try
             {
-                var options = new PngOptions();
-                document.Save(imgStream, options);
-
-                try
+                await context.SavePreviewAndThumbnailAsync(imgStream, 1, cancellationToken).ConfigureAwait(false);
+            }
+            catch (Exception ex)
+            {
+                if (Tools.IsTerminatorError(ex as WebException))
                 {
-                    await context.SavePreviewAndThumbnailAsync(imgStream, 1, cancellationToken).ConfigureAwait(false);
+                    context.LogWarning(1, SR.Exceptions.NotFound);
+                    return;
                 }
-                catch (Exception ex)
-                {
-                    if (Tools.IsTerminatorError(ex as WebException))
-                    {
-                        context.LogWarning(1, SR.Exceptions.NotFound);
-                        return;
-                    }
 
-                    // the preview generator tool will handle the error
-                    throw;
-                }
+                // the preview generator tool will handle the error
+                throw;
             }
         }
     }
