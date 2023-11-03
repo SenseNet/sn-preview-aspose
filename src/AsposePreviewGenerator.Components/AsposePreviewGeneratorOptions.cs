@@ -1,4 +1,5 @@
 ﻿using SenseNet.Client;
+using SenseNet.Tools.Configuration;
 
 namespace SenseNet.Preview.Aspose.AsposePreviewGenerator
 {
@@ -23,6 +24,7 @@ namespace SenseNet.Preview.Aspose.AsposePreviewGenerator
 
     #endregion
 
+    [OptionsClass(sectionName: "sensenet:AsposePreviewGenerator")]
     public class AsposePreviewGeneratorOptions
     {
         public UploadConfig Upload { get; } = new();
