@@ -25,7 +25,7 @@
   <ItemGroup>
     <PackageReference Include="Aspose.Cells" Version="23.6.0" />
     <PackageReference Include="Aspose.Diagram" Version="23.5.0" />
-	  <PackageReference Include="Aspose.Drawing" Version="23.6.0" >
+	  <PackageReference Include="Aspose.Drawing" Version="23.6.0">
 		  <Aliases>AsposeDrawing</Aliases>
 	  </PackageReference>
     <PackageReference Include="Aspose.Email" Version="23.5.1" />
@@ -38,7 +38,7 @@
     <PackageReference Include="Aspose.Words" Version="23.6.0" />
     <PackageReference Include="Microsoft.Extensions.Options.ConfigurationExtensions" Version="7.0.0" />
     <PackageReference Include="SenseNet.Preview.Controller" Version="7.3.6" />
-    <PackageReference Include="SenseNet.Tools" Version="3.2.11" />
+    <PackageReference Include="SenseNet.Tools" Version="3.2.12" />
   </ItemGroup>
 
   <ItemGroup>

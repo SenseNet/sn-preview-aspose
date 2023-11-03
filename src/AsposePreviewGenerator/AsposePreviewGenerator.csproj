@@ -33,7 +33,7 @@
     <PackageReference Include="Microsoft.VisualStudio.Azure.Containers.Tools.Targets" Version="1.17.2" />
     <PackageReference Include="SenseNet.Client" Version="3.0.1" />
     <PackageReference Include="SenseNet.TaskManagement.Core" Version="2.2.2" />
-    <PackageReference Include="SenseNet.Tools" Version="3.2.11" />
+    <PackageReference Include="SenseNet.Tools" Version="3.2.12" />
     <PackageReference Include="Serilog.Extensions.Logging" Version="3.1.0" />
     <PackageReference Include="Serilog.Settings.Configuration" Version="3.4.0" />
     <PackageReference Include="Serilog.Sinks.File" Version="5.0.0" />
