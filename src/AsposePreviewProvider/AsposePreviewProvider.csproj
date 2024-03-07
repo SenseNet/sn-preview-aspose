@@ -5,7 +5,7 @@
     <AssemblyName>SenseNet.Preview.Aspose</AssemblyName>
     <RootNamespace>SenseNet.Preview.Aspose</RootNamespace>
 	<TargetFrameworks>netstandard2.0;net6.0</TargetFrameworks>
-    <Version>7.3.6</Version>
+    <Version>7.3.6.1</Version>
     <Authors>kavics,tusmester,aniko</Authors>
     <Company>Sense/Net Inc.</Company>
     <Copyright>Copyright © Sense/Net Inc.</Copyright>
@@ -38,7 +38,7 @@
     <PackageReference Include="Aspose.Words" Version="23.6.0" />
     <PackageReference Include="Microsoft.Extensions.Options.ConfigurationExtensions" Version="7.0.0" />
     <PackageReference Include="SenseNet.Preview.Controller" Version="7.3.6" />
-    <PackageReference Include="SenseNet.Tools" Version="3.2.12" />
+    <PackageReference Include="SenseNet.Tools" Version="3.2.13" />
   </ItemGroup>
 
   <ItemGroup>
