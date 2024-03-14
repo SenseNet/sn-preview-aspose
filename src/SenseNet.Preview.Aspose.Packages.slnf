@@ -1,0 +1,10 @@
+{
+  "solution": {
+    "path": "SenseNet.Preview.Aspose.sln",
+    "projects": [
+      "AsposePreviewImageGenerators\\AsposePreviewImageGenerators.csproj",
+      "AsposePreviewProvider.Install\\AsposePreviewProvider.Install.csproj",
+      "AsposePreviewProvider\\AsposePreviewProvider.csproj"
+    ]
+  }
+}

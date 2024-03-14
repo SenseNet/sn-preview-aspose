@@ -15,7 +15,7 @@ jobs:
 
     env:
       BUILD_CONFIG: 'Release'
-      SOLUTION: 'SenseNet.Preview.Aspose.sln'
+      SOLUTION: 'SenseNet.Preview.Aspose.Packages.slnf'
 
     steps:
     - name: Checkout
