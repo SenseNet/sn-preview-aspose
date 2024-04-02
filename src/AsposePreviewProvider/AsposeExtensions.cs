@@ -18,13 +18,6 @@ namespace SenseNet.Extensions.DependencyInjection
 
     public static class AsposeExtensions
     {
-        [Obsolete("Please use the AddAsposeDocumentPreviewProvider method instead.", true)]
-        public static IRepositoryBuilder UseAsposeDocumentPreviewProvider(this IRepositoryBuilder repositoryBuilder,
-            Action<AsposeOptions> configure = null)
-        {
-            return repositoryBuilder;
-        }
-
         /// <summary>
         /// Adds the Aspose document provider to the service collection.
         /// </summary>
