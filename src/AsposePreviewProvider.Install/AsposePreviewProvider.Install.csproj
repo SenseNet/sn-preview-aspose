@@ -4,7 +4,7 @@
     <PackageId>SenseNet.Preview.Aspose.Install</PackageId>
     <AssemblyName>SenseNet.Preview.Aspose.Install</AssemblyName>
     <RootNamespace>SenseNet.Preview.Aspose.Install</RootNamespace>
-    <TargetFramework>netstandard2.0</TargetFramework>
+    <TargetFramework>net8.0</TargetFramework>
     <GeneratePackageOnBuild>true</GeneratePackageOnBuild>
     <Version>7.3.4</Version>
     <Company>Sense/Net Inc.</Company>
