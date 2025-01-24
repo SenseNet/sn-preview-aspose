@@ -19,6 +19,8 @@ using AsposeTasks = Aspose.Tasks;
 using System.Reflection;
 using Microsoft.Extensions.Options;
 using SkiaSharp;
+using Aspose.Words;
+using AsposePreviewGenerator.Components;
 
 namespace SenseNet.Preview.Aspose.AsposePreviewGenerator
 {
@@ -45,7 +47,9 @@ namespace SenseNet.Preview.Aspose.AsposePreviewGenerator
         private static IRetrier _retrier;
         private static ISnClientProvider _snClientProvider;
 
-        public static async Task ExecuteAsync(string[] args, IServiceProvider services)
+        private static IRepositoryCollection _repositoryCollection;
+
+        public static async Task ExecuteAsync(string[] args, IServiceProvider services, CancellationToken cancel)
         {
             Logger.Instance = services.GetRequiredService<ILogger<PreviewGenerator>>();
 
@@ -68,7 +72,7 @@ namespace SenseNet.Preview.Aspose.AsposePreviewGenerator
                                                      $"Version: {Version} StartIndex: {StartIndex}");
             try
             {
-                if (!await InitializeAsync(services))
+                if (!await InitializeAsync(services, cancel))
                     return;
             }
             catch (Exception ex)
@@ -97,7 +101,7 @@ namespace SenseNet.Preview.Aspose.AsposePreviewGenerator
             }
         }
 
-        public static async Task<bool> InitializeAsync(IServiceProvider services)
+        public static async Task<bool> InitializeAsync(IServiceProvider services, CancellationToken cancel)
         {
             var config = services.GetRequiredService<IOptions<AsposePreviewGeneratorOptions>>().Value;
             AsposePreviewGeneratorOptions.Initialize(config);
@@ -105,6 +109,7 @@ namespace SenseNet.Preview.Aspose.AsposePreviewGenerator
             _previewManager = services.GetRequiredService<IPreviewGeneratorManager>();
             _retrier = services.GetRequiredService<IRetrier>();
             _snClientProvider = services.GetRequiredService<ISnClientProvider>();
+            _repositoryCollection = services.GetRequiredService<IRepositoryCollection>();
 
             ServicePointManager.DefaultConnectionLimit = 10;
 
@@ -127,11 +132,9 @@ namespace SenseNet.Preview.Aspose.AsposePreviewGenerator
 
             ClientContext.Current.AddServer(server);
 
-            var currentUser = await server.GetCurrentUserAsync(new[]
-                {
-                    "Id", "Path", "Type", "Name"
-                })
-                .ConfigureAwait(false);
+            var repository = await _repositoryCollection.GetRepositoryAsync(CancellationToken.None);
+            var currentUser = await repository.GetCurrentUserAsync(["Id", "Path", "Type", "Name"],
+                    Array.Empty<string>(), CancellationToken.None).ConfigureAwait(false);
             
             Logger.WriteTrace(SiteUrl, ContentId, 0, $"Current user: {currentUser?.Path}");
 
@@ -140,7 +143,7 @@ namespace SenseNet.Preview.Aspose.AsposePreviewGenerator
 
         // ================================================================================================== Preview generation
 
-        public static async Task GenerateImagesAsync(CancellationToken cancellationToken)
+        public static async Task GenerateImagesAsync(CancellationToken cancel)
         {
             int previewsFolderId;
             string contentPath;
@@ -149,7 +152,7 @@ namespace SenseNet.Preview.Aspose.AsposePreviewGenerator
 
             try
             {
-                var fileInfo = await GetFileInfoAsync().ConfigureAwait(false);
+                var fileInfo = await GetFileInfoAsync(cancel).ConfigureAwait(false);
                 if (fileInfo == null)
                 {
                     Logger.WriteWarning(ContentId, 0, "Content not found.");
@@ -157,7 +160,7 @@ namespace SenseNet.Preview.Aspose.AsposePreviewGenerator
                     return;
                 }
 
-                cancellationToken.ThrowIfCancellationRequested();
+                cancel.ThrowIfCancellationRequested();
 
                 previewsFolderId = await GetPreviewsFolderIdAsync();
                 if (previewsFolderId < 1)
@@ -169,7 +172,7 @@ namespace SenseNet.Preview.Aspose.AsposePreviewGenerator
 
                 downloadingSubtask.Progress(10, 100, 2, 110, "File info downloaded.");
 
-                cancellationToken.ThrowIfCancellationRequested();
+                cancel.ThrowIfCancellationRequested();
 
                 contentPath = fileInfo.Path;
 
@@ -191,7 +194,7 @@ namespace SenseNet.Preview.Aspose.AsposePreviewGenerator
             //    Overflow();
             #endregion
 
-            await using var docStream = await GetBinaryAsync();
+            await using var docStream = await GetBinaryAsync(cancel);
             if (docStream == null)
             {
                 Logger.WriteWarning(ContentId, 0, $"Document not found; maybe the content or its version {Version} is missing.");
@@ -201,7 +204,7 @@ namespace SenseNet.Preview.Aspose.AsposePreviewGenerator
 
             downloadingSubtask.Progress(100, 100, 10, 110, "File downloaded.");
 
-            cancellationToken.ThrowIfCancellationRequested();
+            cancel.ThrowIfCancellationRequested();
 
             if (docStream.Length == 0)
             {
@@ -220,7 +223,7 @@ namespace SenseNet.Preview.Aspose.AsposePreviewGenerator
 
             await _previewManager.GeneratePreviewAsync(extension, docStream, new PreviewGenerationContext(
                 ContentId, previewsFolderId, StartIndex, MaxPreviewCount, 
-                Config.ImageGeneration.PreviewResolution, Version), cancellationToken).ConfigureAwait(false);
+                Config.ImageGeneration.PreviewResolution, Version), cancel).ConfigureAwait(false);
 
             _generatingPreviewSubtask.Finish();
         }
@@ -251,7 +254,7 @@ namespace SenseNet.Preview.Aspose.AsposePreviewGenerator
 
             return 0;
         }
-        private static async Task<Stream> GetBinaryAsync()
+        private static async Task<Stream> GetBinaryAsync(CancellationToken cancel)
         {
             Logger.WriteTrace(SiteUrl, ContentId, 0, "Downloading file.");
 
@@ -260,15 +263,15 @@ namespace SenseNet.Preview.Aspose.AsposePreviewGenerator
             try
             {
                 // download the whole file from the server
-                await RESTCaller.GetStreamResponseAsync(ContentId, Version, async response =>
-                    {
-                        if (response == null)
-                            throw new ClientException($"Content {ContentId} {Version} not found.", 
-                                HttpStatusCode.NotFound);
-                        
-                        await response.Content.CopyToAsync(documentStream).ConfigureAwait(false);
+                var repository = await _repositoryCollection.GetRepositoryAsync(cancel);
+                await repository.DownloadAsync(new DownloadRequest {ContentId = ContentId, Version = Version}, 
+                    async (stream, properties) => {
+                        if (stream == null)
+                            throw new ClientException($"Content {ContentId} {Version} not found.", HttpStatusCode.NotFound);
+
+                        await stream.CopyToAsync(documentStream, cancel).ConfigureAwait(false);
                         documentStream.Seek(0, SeekOrigin.Begin);
-                    }, CancellationToken.None).ConfigureAwait(false);
+                    }, cancel).ConfigureAwait(false);
             }
             catch (ClientException ex)
             {
@@ -284,17 +287,18 @@ namespace SenseNet.Preview.Aspose.AsposePreviewGenerator
 
             return documentStream;
         }
-        private static Task<Content> GetFileInfoAsync()
+        private static async Task<Content> GetFileInfoAsync(CancellationToken cancel)
         {
             Logger.WriteTrace(SiteUrl, ContentId, 0, "Downloading file info.");
 
-            return Content.LoadAsync(new ODataRequest
+            var repository = await _repositoryCollection.GetRepositoryAsync(cancel);
+            return await repository.LoadContentAsync(new LoadContentRequest
             {
                 ContentId = ContentId,
                 Select = new[] { "Name", "DisplayName", "Path", "CreatedById" },
                 Version = Version,
                 Metadata = MetadataFormat.None
-            });
+            }, cancel);
         }
 
         public static Task SetPreviewStatusAsync(int status)
@@ -424,19 +428,30 @@ namespace SenseNet.Preview.Aspose.AsposePreviewGenerator
             return SavePreviewAndThumbnailAsync(imgStream, page, previewsFolderId, cancellationToken);
         }
 
-        private static Task<int> UploadImageAsync(Stream imageStream, int previewsFolderId, string imageName,
-            CancellationToken cancellationToken)
+        private static async Task<int> UploadImageAsync(Stream imageStream, int previewsFolderId, string imageName,
+            CancellationToken cancel)
         {
             Logger.WriteTrace(SiteUrl, ContentId, 0, $"Uploading image {imageName}.");
 
-            return _retrier.RetryAsync(async () =>
+            var repository = await _repositoryCollection.GetRepositoryAsync(CancellationToken.None);
+            repository.UploadAsync(new UploadRequest
+            {
+                ContentType = "PreviewImage", ContentName = imageName, ParentId = previewsFolderId
+            }, imageStream, cancel);
+
+
+
+
+
+
+
+            return await _retrier.RetryAsync(async () =>
                 {
                     imageStream.Seek(0, SeekOrigin.Begin);
-
-                    var image = await Content.UploadAsync(previewsFolderId, imageName,
-                        imageStream, "PreviewImage").ConfigureAwait(false);
-
-                    return image.Id;
+                    var uploadResult = await repository.UploadAsync(new UploadRequest
+                            {ContentType = "PreviewImage", ContentName = imageName, ParentId = previewsFolderId},
+                        imageStream, cancel);
+                    return uploadResult.Id;
                 },
                 shouldRetryOnError: (ex, i) =>
                 {
@@ -446,12 +461,12 @@ namespace SenseNet.Preview.Aspose.AsposePreviewGenerator
                     // if the server is too busy, wait longer
                     if (ex is ClientException { StatusCode: HttpStatusCode.TooManyRequests })
                     {
-                        Task.Delay(DELAY_TOO_MANY_REQUESTS, cancellationToken).GetAwaiter().GetResult();
+                        Task.Delay(DELAY_TOO_MANY_REQUESTS, cancel).GetAwaiter().GetResult();
                     }
 
                     return true;
                 },
-                cancel: cancellationToken);
+                cancel: cancel);
 
             //return Retrier.RetryAsync(REQUEST_RETRY_COUNT, 50, async () =>
             //{
@@ -578,10 +593,14 @@ namespace SenseNet.Preview.Aspose.AsposePreviewGenerator
             }, HttpMethod.Post, bodyText);
         }
 
-        private static Task<string> GetResponseStringAsync(ODataRequest request, HttpMethod method = null, string body = null)
+        private static async Task<string> GetResponseStringAsync(ODataRequest request, HttpMethod? method = null, string? body = null)
         {
-            return _retrier.RetryAsync(
-                async () => await RESTCaller.GetResponseStringAsync(request, method ?? HttpMethod.Get, body),
+            if(body != null)
+                request.PostData = body;
+
+            var repository = await _repositoryCollection.GetRepositoryAsync(CancellationToken.None);
+            return await _retrier.RetryAsync<string>(
+                action: async () => await repository.GetResponseStringAsync(request, method ?? HttpMethod.Get, CancellationToken.None),
                 shouldRetryOnError: (ex, i) =>
                 {
                     if (AsposeTools.ContentNotFound(ex))
@@ -596,11 +615,16 @@ namespace SenseNet.Preview.Aspose.AsposePreviewGenerator
                     return true;
                 });
         }
-        private static Task<dynamic> GetResponseJsonAsync(ODataRequest request, HttpMethod method = null, object body = null)
+
+        private static async Task<dynamic> GetResponseJsonAsync(ODataRequest request, HttpMethod? method = null, object? body = null)
         {
-            return _retrier.RetryAsync(
-                async () => await RESTCaller.GetResponseJsonAsync(request, method: method ?? HttpMethod.Get,
-                    postData: body),
+            if (body != null)
+                request.PostData = body;
+
+            var repository = await _repositoryCollection.GetRepositoryAsync(CancellationToken.None);
+            
+            return await _retrier.RetryAsync(
+                async () => await repository.GetResponseJsonAsync(request, method ?? HttpMethod.Get, CancellationToken.None),
                 shouldRetryOnError: (ex, i) =>
                 {
                     if (AsposeTools.ContentNotFound(ex))
@@ -618,43 +642,20 @@ namespace SenseNet.Preview.Aspose.AsposePreviewGenerator
         
         public static bool ParseParameters(string[] args)
         {
-            foreach (var arg in args)
-            {
-                if (arg.StartsWith("USERNAME:", StringComparison.OrdinalIgnoreCase))
-                {
-                    Username = GetParameterValue(arg);
-                }
-                else if (arg.StartsWith("PASSWORD:", StringComparison.OrdinalIgnoreCase))
-                {
-                    Password = GetParameterValue(arg);
-                }
-                if (arg.StartsWith("APIKEY:", StringComparison.OrdinalIgnoreCase))
-                {
-                    ApiKey = GetParameterValue(arg);
-                }
-                else if (arg.StartsWith("DATA:", StringComparison.OrdinalIgnoreCase))
-                {
-                    var data = GetParameterValue(arg).Replace("\"\"", "\"");
+            var parser = new PreviewGeneratorArgumentParser();
+            if(!parser.TryParse(args, out var parsed))
+                return false;
 
-                    var settings = new JsonSerializerSettings { DateFormatHandling = DateFormatHandling.IsoDateFormat };
-                    var serializer = JsonSerializer.Create(settings);
-                    var reader = new JsonTextReader(new StringReader(data));
-                    dynamic previewData = serializer.Deserialize(reader) as JObject;
+            Username = parsed.Username;
+            Password = parsed.Password;
+            ApiKey = parsed.ApiKey;
+            ContentId = parsed.ContentId;
+            Version = parsed.Version;
+            StartIndex = parsed.StartIndex;
+            MaxPreviewCount = parsed.MaxPreviewCount;
+            SiteUrl = parsed.SiteUrl;
 
-                    ContentId = previewData.Id;
-                    Version = previewData.Version;
-                    StartIndex = previewData.StartIndex;
-                    MaxPreviewCount = previewData.MaxPreviewCount;
-                    SiteUrl = previewData.CommunicationUrl;
-                }
-            }
-
-            return ContentId > 0 && !string.IsNullOrEmpty(Version) && StartIndex >= 0 && 
-                   MaxPreviewCount > 0 && !string.IsNullOrEmpty(SiteUrl);
-        }
-        private static string GetParameterValue(string arg)
-        {
-            return arg.Substring(arg.IndexOf(":", StringComparison.Ordinal) + 1).TrimStart('\'', '"').TrimEnd('\'', '"');
+            return true;
         }
 
         private static void CheckLicense(string fileName)

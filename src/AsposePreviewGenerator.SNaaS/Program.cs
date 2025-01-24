@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Threading;
 using System.Threading.Tasks;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
@@ -19,7 +20,7 @@ namespace SenseNet.Preview.Aspose.AsposePreviewGenerator
             var logger = host.Services.GetRequiredService<ILogger<Program>>();
             logger.LogTrace("Starting AsposePreviewGenerator.SNaaS");
 
-            await PreviewGenerator.ExecuteAsync(args, host.Services).ConfigureAwait(false);
+            await PreviewGenerator.ExecuteAsync(args, host.Services, CancellationToken.None).ConfigureAwait(false);
         }
 
         private static IHostBuilder CreateHostBuilder(string[] args) =>
@@ -42,6 +43,7 @@ namespace SenseNet.Preview.Aspose.AsposePreviewGenerator
                     .AddSingleton<ISnClientProvider, SNaaSClientProvider>()
                     .ConfigureSnaasOptions(hb.Configuration)
                     .AddSnaasSecretStore()
+                    .AddSenseNetClient()
                     .AddSenseNetPreview()
                     .AddSenseNetAsposePreviewGenerators()
                     .AddSenseNetRetrier());
