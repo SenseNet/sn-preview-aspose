@@ -68,7 +68,6 @@ namespace SenseNet.Preview.Aspose.AsposePreviewGenerator
             if(!argumentParser.TryParse(args, out var parsed))
                 return null;
 
-            _arguments = parsed;
             return new RepositoryOptions
             {
                 Url = parsed.SiteUrl,
