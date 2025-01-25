@@ -2,6 +2,7 @@
   "profiles": {
     "AsposePreviewGenerator": {
       "commandName": "Project",
+      "commandLineArgs": "APIKEY:P7Xj3jA7d293d7vhNrwd6pAORczqwQfaEVEGk3tDinYgVGEBJ5l3TqCZTKS8BlWjzbZRuuJdxILLXDAS4v5 DATA:\"{\\\"Id\\\":3270,\\\"Version\\\":\\\"V1.0.A\\\",\\\"StartIndex\\\":0,\\\"CommunicationUrl\\\":\\\"https://localhost:44362\\\",\\\"MaxPreviewCount\\\":10,\\\"DisplayName\\\":\\\"-MS-ODATA-.pdf\\\",\\\"ContextPath\\\":\\\"/Root/Content/-MS-ODATA-.pdf\\\"}\"",
       "environmentVariables": {
         "NETCORE_ENVIRONMENT": "Development",
         "SenseNet__AsposePreviewGenerator__ImageGeneration__CheckLicense": "false"

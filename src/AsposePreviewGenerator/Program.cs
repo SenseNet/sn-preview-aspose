@@ -28,16 +28,8 @@ namespace SenseNet.Preview.Aspose.AsposePreviewGenerator
             var logger = host.Services.GetRequiredService<ILogger<Program>>();
             logger.LogTrace("Starting AsposePreviewGenerator");
 
-            if (_arguments == null)
-            {
-                logger.LogError("Aspose preview generator process arguments are not correct.");
-                logger.LogInformation("Abort AsposePreviewGenerator");
-            }
-
             await PreviewGenerator.ExecuteAsync(args, host.Services, CancellationToken.None).ConfigureAwait(false);
         }
-
-        private static Arguments _arguments = null;
 
         private static IHostBuilder CreateHostBuilder(string[] args) =>
             Host.CreateDefaultBuilder(args)
@@ -70,7 +62,6 @@ namespace SenseNet.Preview.Aspose.AsposePreviewGenerator
                     .AddSenseNetPreview()
                     .AddSenseNetAsposePreviewGenerators()
                     .AddSenseNetRetrier());
-
         private static RepositoryOptions ParseRepositoryOptions(string[] args)
         {
             var argumentParser = new PreviewGeneratorArgumentParser();
