@@ -22,6 +22,8 @@
     <ApplicationIcon>sn.ico</ApplicationIcon>
     <UserSecretsId>870b6f4c-77e2-4ec4-8762-ca8a59bbfbb3</UserSecretsId>
     <DockerDefaultTargetOS>Linux</DockerDefaultTargetOS>
+    <IncludeSymbols>true</IncludeSymbols>
+    <SymbolPackageFormat>snupkg</SymbolPackageFormat>
   </PropertyGroup>
 
   <ItemGroup>

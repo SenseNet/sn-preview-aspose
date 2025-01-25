@@ -18,6 +18,8 @@
     <PackageReleaseNotes>See release notes on GitHub.</PackageReleaseNotes>
     <Product>sensenet Aspose Preview Provider</Product>
     <Description>This package contains installation items and should be installed only in a single console or web project. All other projects should reference the SenseNet.Preview.Aspose dll-only package.</Description>
+	<IncludeSymbols>true</IncludeSymbols>
+	<SymbolPackageFormat>snupkg</SymbolPackageFormat>
   </PropertyGroup>
 
   <ItemGroup>

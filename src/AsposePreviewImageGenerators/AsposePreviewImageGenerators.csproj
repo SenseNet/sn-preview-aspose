@@ -19,7 +19,9 @@
     <GeneratePackageOnBuild>true</GeneratePackageOnBuild>
     <Product>sensenet Aspose Preview image generators</Product>
     <Description>Aspose Preview image generator classes for the sensenet platform.</Description>
-	  <LangVersion>latest</LangVersion>
+    <LangVersion>latest</LangVersion>
+    <IncludeSymbols>true</IncludeSymbols>
+    <SymbolPackageFormat>snupkg</SymbolPackageFormat>
   </PropertyGroup>
 
   <ItemGroup>
