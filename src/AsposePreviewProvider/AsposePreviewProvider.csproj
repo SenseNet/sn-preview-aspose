@@ -38,7 +38,6 @@
     </PackageReference>
     <PackageReference Include="Aspose.Tasks" Version="23.5.0" />
     <PackageReference Include="Aspose.Words" Version="23.6.0" />
-    <PackageReference Include="Microsoft.Extensions.Options.ConfigurationExtensions" Version="7.0.0" />
     <PackageReference Include="SenseNet.Preview.Controller" Version="7.3.7.1" />
     <PackageReference Include="SenseNet.Tools" Version="3.2.13.1" />
   </ItemGroup>

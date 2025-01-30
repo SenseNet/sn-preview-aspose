@@ -27,7 +27,6 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <PackageReference Include="IdentityModel" Version="6.0.0" />
     <PackageReference Include="Microsoft.Extensions.Configuration.EnvironmentVariables" Version="7.0.0" />
     <PackageReference Include="Microsoft.Extensions.Configuration.Json" Version="7.0.0" />
     <PackageReference Include="Microsoft.Extensions.Configuration.UserSecrets" Version="7.0.0" />
