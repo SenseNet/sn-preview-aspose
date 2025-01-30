@@ -20,7 +20,7 @@
 
 	<ItemGroup>
 		<PackageReference Include="SenseNet.Client" Version="4.0.1.1" />
-		<PackageReference Include="SenseNet.Preview" Version="7.2.4.1" />
+		<PackageReference Include="SenseNet.Preview" Version="7.2.4.2" />
 		<PackageReference Include="SenseNet.TaskManagement.Core" Version="2.2.3.1" />
 		<PackageReference Include="SenseNet.Tools" Version="3.2.13.1" />
 		<PackageReference Include="SkiaSharp.NativeAssets.Linux.NoDependencies" Version="2.88.3" />
