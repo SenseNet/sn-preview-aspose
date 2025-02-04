@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Threading;
 using System.Threading.Tasks;
 using AsposePreviewGenerator.Components;
 using Microsoft.Extensions.DependencyInjection;
@@ -8,6 +9,8 @@ using Serilog;
 using Microsoft.Extensions.Configuration;
 using SenseNet.TaskManagement.Core;
 using Microsoft.Extensions.Logging;
+using SenseNet.Client;
+using SenseNet.Client.Authentication;
 
 namespace SenseNet.Preview.Aspose.AsposePreviewGenerator
 {
@@ -25,7 +28,7 @@ namespace SenseNet.Preview.Aspose.AsposePreviewGenerator
             var logger = host.Services.GetRequiredService<ILogger<Program>>();
             logger.LogTrace("Starting AsposePreviewGenerator");
 
-            await PreviewGenerator.ExecuteAsync(args, host.Services).ConfigureAwait(false);
+            await PreviewGenerator.ExecuteAsync(args, host.Services, CancellationToken.None).ConfigureAwait(false);
         }
 
         private static IHostBuilder CreateHostBuilder(string[] args) =>
@@ -46,9 +49,30 @@ namespace SenseNet.Preview.Aspose.AsposePreviewGenerator
                                                        StringComparison.InvariantCultureIgnoreCase);
                     })
                     .AddSingleton<ISnClientProvider, DefaultSnClientProvider>()
-                    .AddSenseNetClientTokenStore()
+                    .AddSenseNetClient()
+                    .ConfigureSenseNetRepository(repositoryOptions =>
+                    {
+                        var repositoryData = ParseRepositoryOptions(args);
+                        if (repositoryData == null)
+                            return;
+                        repositoryOptions.Url = repositoryData.Url;
+                        repositoryOptions.Authentication =
+                            new AuthenticationOptions {ApiKey = repositoryData.Authentication.ApiKey};
+                    })
                     .AddSenseNetPreview()
                     .AddSenseNetAsposePreviewGenerators()
                     .AddSenseNetRetrier());
+        private static RepositoryOptions ParseRepositoryOptions(string[] args)
+        {
+            var argumentParser = new PreviewGeneratorArgumentParser();
+            if(!argumentParser.TryParse(args, out var parsed))
+                return null;
+
+            return new RepositoryOptions
+            {
+                Url = parsed.SiteUrl,
+                Authentication = new AuthenticationOptions {ApiKey = parsed.ApiKey}
+            };
+        }
     }
 }

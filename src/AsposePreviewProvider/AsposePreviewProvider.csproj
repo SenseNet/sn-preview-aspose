@@ -4,8 +4,8 @@
     <PackageId>SenseNet.Preview.Aspose</PackageId>
     <AssemblyName>SenseNet.Preview.Aspose</AssemblyName>
     <RootNamespace>SenseNet.Preview.Aspose</RootNamespace>
-	<TargetFrameworks>netstandard2.0;net6.0</TargetFrameworks>
-    <Version>7.3.7</Version>
+	<TargetFramework>net8.0</TargetFramework>
+    <Version>7.4.0</Version>
     <Authors>kavics,tusmester,aniko</Authors>
     <Company>Sense/Net Inc.</Company>
     <Copyright>Copyright © Sense/Net Inc.</Copyright>
@@ -20,6 +20,8 @@
     <Product>sensenet Aspose Preview Provider</Product>
     <Description>sensenet Aspose Preview Provider makes it possible to generate and serve preview images using Aspose libraries.</Description>
     <LangVersion>latest</LangVersion>
+	<IncludeSymbols>true</IncludeSymbols>
+	<SymbolPackageFormat>snupkg</SymbolPackageFormat>
   </PropertyGroup>
 
   <ItemGroup>
@@ -36,9 +38,8 @@
     </PackageReference>
     <PackageReference Include="Aspose.Tasks" Version="23.5.0" />
     <PackageReference Include="Aspose.Words" Version="23.6.0" />
-    <PackageReference Include="Microsoft.Extensions.Options.ConfigurationExtensions" Version="7.0.0" />
-    <PackageReference Include="SenseNet.Preview.Controller" Version="7.3.6" />
-    <PackageReference Include="SenseNet.Tools" Version="3.2.13" />
+    <PackageReference Include="SenseNet.Preview.Controller" Version="7.4.0" />
+    <PackageReference Include="SenseNet.Tools" Version="3.3.0" />
   </ItemGroup>
 
   <ItemGroup>

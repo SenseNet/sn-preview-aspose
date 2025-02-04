@@ -4,9 +4,9 @@
     <PackageId>SenseNet.Preview.Aspose.Install</PackageId>
     <AssemblyName>SenseNet.Preview.Aspose.Install</AssemblyName>
     <RootNamespace>SenseNet.Preview.Aspose.Install</RootNamespace>
-    <TargetFramework>netstandard2.0</TargetFramework>
+    <TargetFramework>net8.0</TargetFramework>
     <GeneratePackageOnBuild>true</GeneratePackageOnBuild>
-    <Version>7.3.4</Version>
+    <Version>7.4.0</Version>
     <Company>Sense/Net Inc.</Company>
     <Copyright>Copyright © Sense/Net Inc.</Copyright>
     <PackageLicenseUrl>https://github.com/SenseNet/sn-preview/blob/master/LICENSE</PackageLicenseUrl>
@@ -18,6 +18,8 @@
     <PackageReleaseNotes>See release notes on GitHub.</PackageReleaseNotes>
     <Product>sensenet Aspose Preview Provider</Product>
     <Description>This package contains installation items and should be installed only in a single console or web project. All other projects should reference the SenseNet.Preview.Aspose dll-only package.</Description>
+	<IncludeSymbols>true</IncludeSymbols>
+	<SymbolPackageFormat>snupkg</SymbolPackageFormat>
   </PropertyGroup>
 
   <ItemGroup>
