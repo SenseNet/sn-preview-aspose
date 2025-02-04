@@ -5,7 +5,7 @@
     <AssemblyName>SenseNet.Preview.Aspose</AssemblyName>
     <RootNamespace>SenseNet.Preview.Aspose</RootNamespace>
 	<TargetFramework>net8.0</TargetFramework>
-    <Version>7.3.7.2</Version>
+    <Version>7.4.0</Version>
     <Authors>kavics,tusmester,aniko</Authors>
     <Company>Sense/Net Inc.</Company>
     <Copyright>Copyright © Sense/Net Inc.</Copyright>
@@ -38,8 +38,8 @@
     </PackageReference>
     <PackageReference Include="Aspose.Tasks" Version="23.5.0" />
     <PackageReference Include="Aspose.Words" Version="23.6.0" />
-    <PackageReference Include="SenseNet.Preview.Controller" Version="7.3.7.2" />
-    <PackageReference Include="SenseNet.Tools" Version="3.2.13.1" />
+    <PackageReference Include="SenseNet.Preview.Controller" Version="7.4.0" />
+    <PackageReference Include="SenseNet.Tools" Version="3.3.0" />
   </ItemGroup>
 
   <ItemGroup>
