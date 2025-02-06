@@ -3,7 +3,7 @@ ARG TASKAGENT_VERSION=latest
 FROM ${TASKAGENT_IMAGE}:${TASKAGENT_VERSION} AS base
 WORKDIR /app
 
-FROM mcr.microsoft.com/dotnet/sdk:6.0 AS build
+FROM mcr.microsoft.com/dotnet/sdk:8.0 AS build
 WORKDIR /src
 COPY . .
 RUN dotnet restore "AsposePreviewGenerator.SNaaS/AsposePreviewGenerator.SNaaS.csproj"
